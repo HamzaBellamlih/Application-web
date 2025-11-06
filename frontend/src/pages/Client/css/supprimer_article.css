@@ -1,0 +1,96 @@
+/* Container */
+.supprimer-article-container {
+  padding: 30px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #F3E2D0; /* bois clair */
+  min-height: 100vh;
+  animation: fadeIn 0.8s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Titre */
+.titre {
+  color: #5C3A21;
+  font-size: 1.8rem;
+  margin-bottom: 15px;
+  text-shadow: 1px 1px 2px #A16B44;
+}
+
+/* Info client */
+.client-info {
+  margin-bottom: 20px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Formulaire */
+.formulaire {
+  background-color: #FFF8DC;
+  border: 2px solid #8B5E3C;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.formulaire p {
+  margin: 5px 0;
+}
+
+/* Boutons */
+.action-button {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-supprimer, .btn-annuler {
+  padding: 10px 25px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.btn-supprimer {
+  background-color: #e74c3c;
+  color: white;
+  box-shadow: 0 4px #c0392b, 0 6px 10px rgba(0,0,0,0.2);
+}
+
+.btn-supprimer:hover {
+  transform: translateY(-3px) scale(1.05);
+  background-color: #c0392b;
+  box-shadow: 0 8px #c0392b, 0 12px 15px rgba(0,0,0,0.3);
+}
+
+.btn-supprimer:active {
+  transform: translateY(2px);
+  box-shadow: 0 4px #c0392b, 0 6px 10px rgba(0,0,0,0.2);
+}
+
+.btn-supprimer:disabled {
+  background-color: #f5b7b1;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.btn-annuler {
+  background-color: gray;
+  color: white;
+}
+
+.btn-annuler:hover {
+  transform: scale(1.05);
+  background-color: #555;
+}
+
+/* Message d'erreur */
+.error {
+  margin-top: 20px;
+  color: red;
+  font-weight: bold;
+}

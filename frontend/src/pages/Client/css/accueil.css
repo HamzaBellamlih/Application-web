@@ -1,0 +1,102 @@
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  background: url("https://images.unsplash.com/photo-1560184897-1e1f8e7f2a68?auto=format&fit=crop&w=1920&q=80")
+    no-repeat center center/cover;
+  min-height: 100vh;
+}
+
+.client-container {
+  background: rgba(34, 20, 10, 0.8);
+  min-height: 100vh;
+  color: #f5deb3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 60px;
+}
+
+.client-title {
+  font-size: 2rem;
+  color: #ffdf91;
+  margin-bottom: 25px;
+  text-shadow: 2px 2px 5px #000;
+}
+
+.client-card {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid #d2b48c;
+  border-radius: 15px;
+  padding: 25px 35px;
+  width: 320px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  margin-bottom: 30px;
+}
+
+.client-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.client-card li {
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(210, 180, 140, 0.4);
+}
+
+.client-card li:last-child {
+  border-bottom: none;
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn-wood {
+  background-color: #8b5a2b;
+  color: #fff;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+  width: 220px;
+}
+
+.btn-wood:hover {
+  background-color: #a0522d;
+  transform: scale(1.05);
+}
+
+.btn-logout {
+  background-color: #d2691e;
+  color: #fff;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+  width: 220px;
+}
+
+.btn-logout:hover {
+  background-color: #cd853f;
+  transform: scale(1.05);
+}
+
+.error {
+  color: #ff6b6b;
+  margin-top: 15px;
+  font-weight: bold;
+}
+
+.loading {
+  color: #eee;
+  font-style: italic;
+}

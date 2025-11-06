@@ -1,0 +1,122 @@
+/* 🌳 Arrière-plan bois réaliste avec effet de lumière */
+.bg-wood {
+  background: url("https://www.transparenttextures.com/patterns/wood-pattern.png"),
+              linear-gradient(135deg, #8d6e63, #a1887f, #6d4c41);
+  background-blend-mode: multiply;
+  background-size: 200px 200px, 400% 400%;
+  animation: bgShine 12s ease-in-out infinite;
+  min-height: 100vh;
+  padding: 60px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #3e2723;
+  text-align: center;
+  font-family: "Poppins", sans-serif;
+}
+
+/* ✨ Effet de lumière mouvante sur le fond */
+@keyframes bgShine {
+  0% { background-position: 0% 50%, 0% 0%; }
+  50% { background-position: 100% 50%, 100% 100%; }
+  100% { background-position: 0% 50%, 0% 0%; }
+}
+
+/* 🔠 Titre animé avec effet de brillance */
+.title {
+  font-size: 2.6rem;
+  color: #fff8e1;
+  text-shadow: 3px 3px 10px rgba(40, 20, 0, 0.7);
+  animation: fadeIn 2s ease-out, shineText 4s ease-in-out infinite;
+  margin-bottom: 25px;
+}
+
+@keyframes shineText {
+  0%, 100% { text-shadow: 3px 3px 10px rgba(60, 30, 0, 0.7); }
+  50% { text-shadow: 0 0 25px rgba(255, 224, 178, 0.9); }
+}
+
+/* 📜 Description avec effet de glissement */
+.description {
+  background: rgba(255, 248, 240, 0.9);
+  border-radius: 18px;
+  padding: 25px 30px;
+  max-width: 850px;
+  box-shadow: 0 8px 25px rgba(70, 35, 0, 0.3);
+  line-height: 1.7;
+  font-size: 1.1rem;
+  color: #4e342e;
+  animation: slideUp 1.5s ease-out;
+}
+
+/* 🌿 Animation douce de montée */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 🔘 Groupe de boutons */
+.btn-group {
+  margin-top: 40px;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+  animation: fadeIn 2.5s ease-in;
+}
+
+/* 🪵 Boutons effet bois sculpté */
+.btn-wood, .btn-login {
+  background: linear-gradient(160deg, #a97c50, #7b4f2d);
+  color: #fffaf0;
+  border: none;
+  border-radius: 14px;
+  padding: 14px 28px;
+  font-size: 1.05rem;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  box-shadow: 0 6px 15px rgba(50, 25, 0, 0.4), inset 0 -3px 5px rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* ✨ Éclat animé au survol */
+.btn-wood::after, .btn-login::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: skewX(-25deg);
+  transition: left 0.6s ease;
+}
+
+.btn-wood:hover::after, .btn-login:hover::after {
+  left: 125%;
+}
+
+/* 🪶 Effet de rebond au hover */
+.btn-wood:hover, .btn-login:hover {
+  transform: scale(1.08);
+  box-shadow: 0 10px 25px rgba(50, 25, 0, 0.6);
+}
+
+/* 🔐 Bouton Connexion doré */
+.btn-login {
+  background: linear-gradient(145deg, #d4a05f, #b8860b);
+  color: #fffde7;
+}
+.btn-login:hover {
+  background: linear-gradient(145deg, #ffd27f, #b8860b);
+  color: #3e2723;
+}
+
+/* ✨ Apparition en fondu */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}

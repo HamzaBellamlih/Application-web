@@ -1,0 +1,141 @@
+/* 🌲 Fond bois réaliste avec effet de profondeur */
+.inscription-bois-container {
+  height: 130vh;
+  background-image: url('https://www.transparenttextures.com/patterns/wood-pattern.png'),
+    linear-gradient(135deg, #a67843 0%, #6b4423 100%);
+  background-blend-mode: overlay;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: backgroundFade 2s ease-in-out;
+  font-family: "Poppins", sans-serif;
+}
+
+.inscription-form{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 🪵 Carte du formulaire */
+.form-card {
+  background: rgba(255, 248, 220, 0.95);
+  backdrop-filter: blur(3px);
+  border-radius: 20px;
+  padding: 40px 30px;
+  width: 380px;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  transform: perspective(1000px) rotateY(-10deg);
+  animation: slideUp 1.3s ease-out forwards;
+}
+
+/* ✨ Titre du formulaire */
+.form-title {
+  font-size: 1.9em;
+  color: #5a3b1b;
+  text-shadow: 2px 2px #d7b77a;
+  margin-bottom: 25px;
+  animation: bounceIn 1s ease;
+}
+
+/* 🌾 Champs du formulaire */
+.input-field {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 12px;
+  border: 2px solid #d7b77a;
+  border-radius: 10px;
+  background-color: #fff8e7;
+  color: #4b2e13;
+  font-size: 1em;
+  outline: none;
+  transition: all 0.3s ease-in-out;
+}
+
+.input-field:focus {
+  background-color: #fffdf4;
+  border-color: #a06d38;
+  box-shadow: 0 0 12px #f3d38b;
+  transform: scale(1.05);
+}
+
+/* 🌟 Bouton principal */
+.btn-inscrire {
+  background: linear-gradient(135deg, #8b5a2b, #a67843);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  width: 100%;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: 0.4s ease;
+  box-shadow: 0 5px 15px rgba(139, 90, 43, 0.5);
+}
+
+.btn-inscrire:hover {
+  background: linear-gradient(135deg, #a57340, #7a4b25);
+  transform: scale(1.07) translateY(-3px);
+  box-shadow: 0 6px 20px rgba(255, 223, 186, 0.7);
+}
+
+/* 💬 Message après inscription */
+.message {
+  margin-top: 15px;
+  font-weight: bold;
+  color: #5a3b1b;
+  animation: fadeIn 1s ease;
+}
+
+/* 🔗 Lien connexion */
+.connexion-text {
+  margin-top: 20px;
+  color: #4b2e13;
+}
+
+.btn-connexion {
+  background: none;
+  color: #5a3b1b;
+  border: 2px solid #5a3b1b;
+  border-radius: 10px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-connexion:hover {
+  background-color: #5a3b1b;
+  color: #fff;
+  transform: scale(1.1);
+}
+
+/* 🌈 Animations */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(100px) rotateY(-10deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotateY(0);
+  }
+}
+
+@keyframes bounceIn {
+  0% { transform: scale(0.7); opacity: 0; }
+  60% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes backgroundFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

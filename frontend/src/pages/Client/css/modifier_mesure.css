@@ -1,0 +1,176 @@
+/* 🌿 Conteneur principal */
+.modifier-mesure-container {
+  background: linear-gradient(135deg, #fdfaf6, #fff5ea);
+  border: 2px solid #c9a87a;
+  border-radius: 16px;
+  max-width: 950px;
+  margin: 40px auto;
+  padding: 30px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  font-family: "Poppins", sans-serif;
+  animation: fadeIn 0.7s ease-in-out;
+}
+
+/* 🌟 Animation d'apparition */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 🪵 Titre */
+.modifier-title {
+  text-align: center;
+  color: #704214;
+  font-weight: 700;
+  font-size: 1.9rem;
+  margin-bottom: 25px;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.15);
+}
+
+/* 💰 Bloc prix */
+.prix-info {
+  display: flex;
+  justify-content: space-around;
+  background: #fffaf3;
+  border: 1.5px solid #d1a36e;
+  border-radius: 12px;
+  padding: 15px;
+  color: #5a3416;
+  font-weight: 600;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  animation: slideIn 0.8s ease-in-out;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-40px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* 🪶 Bloc de chaque mesure */
+.mesure-block {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  background: #fff;
+  border: 1.5px solid #c9a87a;
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
+  animation: pulse 3s ease-in-out infinite alternate;
+}
+
+/* 🌬 Animation de va-et-vient (respiration douce) */
+@keyframes pulse {
+  0% { transform: translateY(0); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+  100% { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
+}
+
+/* Effet au survol */
+.mesure-block:hover {
+  transform: scale(1.02);
+  background: #fff7ed;
+}
+
+/* 🧾 Labels */
+.form-select {
+  color: #4b3214;
+  width: auto;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* 📏 Inputs */
+input[type="number"] {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1.5px solid #d4b186;
+  background: #ffd0a2;
+  font-size: 0.95rem;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  width: 100px;
+  transition: all 0.25s ease;
+}
+
+input[type="number"]:focus {
+  outline: none;
+  border-color: #a16b45;
+  transform: scale(1.08);
+  background: #fff3e0;
+}
+
+/* 🪚 Encadrements (checkboxes) */
+label input[type="checkbox"] {
+  margin-right: 5px;
+  accent-color: #a36d3a;
+}
+
+input[type="checkbox"] {
+  color: #5e3c18;
+  font-weight: 500;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+/* 🎛️ Boutons */
+.btn-submit,
+.btn-cancel {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 22px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-right: 10px;
+}
+
+.btn-submit {
+  background: linear-gradient(135deg, #a16b45, #84532b);
+  color: white;
+  box-shadow: 0 4px 10px rgba(161,107,69,0.3);
+}
+
+.btn-cancel {
+  background: #6c757d;
+  color: white;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(161,107,69,0.4);
+}
+
+.btn-cancel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+}
+
+/* ✅ Messages */
+.message {
+  color: #2d7a3e;
+  text-align: center;
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+.error {
+  color: #b61827;
+  text-align: center;
+  font-weight: 600;
+}
+
+.mesures-place{
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  flex-wrap: wrap;
+}
