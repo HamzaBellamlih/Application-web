@@ -26,6 +26,7 @@ import OptimisationPage from './pages/Valideur/optimiser_découpe';
 import Accueil from "./components/Accueil";
 import TypeArticles from "./components/Types_articles";
 import Typebois from "./components/Types_bois";
+import Saas from "./components/Saas";
 
 function App() {
   return (
@@ -100,6 +101,7 @@ function App() {
         {/* Route Valideur / Optimisation découpage */}
         <Route path="/optimiser_decoupage/:articleId" element={<OptimisationPage />} />
         <Route path="/HomeAdmin" element={<HomeAdmin />} />
+        <Route path="/Saas" element={<Saas />} />
       </Routes>
     </Router>
   );

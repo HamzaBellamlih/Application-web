@@ -46,6 +46,12 @@ function Accueil() {
         >
           🔐 Connexion
         </button>
+        <button
+          onClick={() => navigate("/Saas")}
+          className="btn-wood"
+        >
+          🌐 Découvrir SaaS
+        </button>
       </div>
     </div>
   );
