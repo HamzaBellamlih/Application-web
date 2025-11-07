@@ -37,9 +37,9 @@
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
-    ],
-    "dependencies": {
-      "framer-motion": "^11.x.x"
-    }
+    ]
+  },
+  "dependencies": {
+    "framer-motion": "^11.x.x"
   }
 }
