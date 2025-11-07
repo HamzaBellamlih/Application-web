@@ -41,16 +41,16 @@ function Accueil() {
           Découvrir les Bois
         </button>
         <button
-          onClick={() => navigate("/login")}
-          className="btn-login"
-        >
-          🔐 Connexion
-        </button>
-        <button
           onClick={() => navigate("/Saas")}
           className="btn-wood"
         >
           🌐 Découvrir SaaS
+        </button>
+        <button
+          onClick={() => navigate("/login")}
+          className="btn-login"
+        >
+          🔐 Connexion
         </button>
       </div>
     </div>
