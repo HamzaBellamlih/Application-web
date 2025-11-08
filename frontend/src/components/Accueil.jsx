@@ -17,7 +17,7 @@ function Accueil() {
         calcule automatiquement la meilleure façon de découper les panneaux de
         bois selon les mesures exactes des articles commandés par le client.
         <br /><br />
-        ✅ Cela permet de :
+        Cela permet de :
         <br />• Réduire les pertes de matière.
         <br />• Gagner du temps grâce à une organisation claire.
         <br />• Améliorer la précision et éviter les erreurs.
