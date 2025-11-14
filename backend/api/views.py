@@ -1846,30 +1846,3 @@ def afficher_total_mesures(request):
                 float(mesure.nombre_de_fois or 0)
             )
     return JsonResponse({"total_global": total_global})
-
-@csrf_exempt
-def ocr_image(request):
-    """
-    API endpoint: POST an image file, get extracted text (OCR) as JSON.
-    Amélioré : prétraitement (niveaux de gris, contraste, seuillage) et config Tesseract pour chiffres et opérateurs.
-    """
-    if request.method == 'POST' and request.FILES.get('image'):
-        image_file = request.FILES['image']
-        try:
-            image = Image.open(image_file)
-            img = np.array(image)
-            if img.ndim == 3:
-                img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-            # Augmenter le contraste
-            img = cv2.equalizeHist(img)
-            # Binarisation adaptative
-            img = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 31, 10)
-            # Retour à PIL
-            image_pil = Image.fromarray(img)
-            # Config Tesseract : chiffres, opérateurs, lettres
-            custom_config = r'-c tessedit_char_whitelist=0123456789xX*+=-.,:;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ --psm 6'
-            text = pytesseract.image_to_string(image_pil, lang='fra', config=custom_config)
-            return JsonResponse({'success': True, 'text': text})
-        except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)}, status=500)
-    return JsonResponse({'success': False, 'error': 'POST an image file with key "image".'}, status=400)
