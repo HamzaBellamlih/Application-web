@@ -1,186 +1,182 @@
-/* 🌐 STYLE GLOBAL */
-body {
+* {
   margin: 0;
-  font-family: "Poppins", sans-serif;
-  background: #f9fafc;
-  color: #222;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.saas-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+body {
+  background: #f7f9fc;
+}
+
+.container {
+  width: 100%;
+  max-width: 800px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  margin: 40px auto;
+  overflow: hidden;
+}
+
+header {
+  background: #2c3e50;
+  color: white;
+  padding: 30px;
   text-align: center;
 }
 
-/* 🔝 HEADER */
-.header {
-  width: 100%;
-  background: white;
+header h1 {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+header p {
+  font-size: 16px;
+  opacity: 0.9;
+}
+
+.offers {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 4rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-.logo {
-  font-weight: 700;
-  font-size: 1.5rem;
-  color: #2d89ff;
-}
-
-.header nav a {
-  margin: 0 1rem;
-  text-decoration: none;
-  color: #333;
-  font-weight: 500;
-  transition: color 0.3s;
-}
-
-.header nav a:hover {
-  color: #2d89ff;
-}
-
-/* 🧭 SECTION HERO */
-.main {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 4rem 6rem;
   flex-wrap: wrap;
-  gap: 2rem;
+  padding: 20px;
+  gap: 20px;
+  justify-content: center;
 }
 
-.hero-text {
-  max-width: 500px;
+.offer {
+  flex: 1;
+  min-width: 220px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  transition: all 0.3s ease;
+  position: relative;
+  cursor: pointer;
+}
+
+.offer:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.offer.selected {
+  border: 2px solid #6a11cb;
+  background: #f9f0ff;
+  transform: scale(1.03);
+}
+
+.offer-popular {
+  border: 2px solid #6a11cb;
+}
+
+.popular-badge {
+  position: absolute;
+  top: -12px;
+  right: 20px;
+  background: #6a11cb;
+  color: white;
+  font-size: 12px;
+  padding: 5px 10px;
+  border-radius: 20px;
+}
+
+.offer-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.offer-price {
+  font-size: 28px;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 15px;
+}
+
+.offer-features {
+  list-style: none;
+  margin-bottom: 20px;
   text-align: left;
 }
 
-.hero-text h2 {
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-}
-
-.hero-text h2 span {
-  color: #2d89ff;
-}
-
-.hero-text p {
-  font-size: 1.1rem;
+.offer-features li {
+  margin-bottom: 10px;
   color: #555;
-  margin-bottom: 2rem;
-  line-height: 1.6;
 }
 
-/* 🎯 BOUTONS */
-.btn-group {
-  display: flex;
-  gap: 1rem;
+.offer-features li::before {
+  content: "✓";
+  color: #4CAF50;
+  font-weight: bold;
+  margin-right: 8px;
 }
 
-.btn-primary,
-.btn-secondary {
-  padding: 0.9rem 1.6rem;
-  border-radius: 8px;
-  font-weight: 600;
+.offer button {
+  width: 100%;
+  padding: 12px;
+  background: #4CAF50;
+  color: white;
   border: none;
+  border-radius: 8px;
+  font-size: 16px;
   cursor: pointer;
-  transition: all 0.3s ease;
 }
 
-.btn-primary {
-  background: #2d89ff;
-  color: white;
+.offer button:hover {
+  background: #45a049;
 }
 
-.btn-primary:hover {
-  background: #1b6de0;
-}
-
-.btn-secondary {
-  background: transparent;
-  color: #2d89ff;
-  border: 2px solid #2d89ff;
-}
-
-.btn-secondary:hover {
-  background: #2d89ff;
-  color: white;
-}
-
-/* 🖼️ IMAGE HERO */
-.hero-image {
-  width: 500px;
-  max-width: 90%;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-}
-
-/* 💡 FONCTIONNALITÉS */
-.features {
-  background: #f0f4ff;
-  width: 100%;
-  padding: 4rem 2rem;
-}
-
-.features h3 {
-  font-size: 2rem;
-  color: #2d89ff;
-  margin-bottom: 2rem;
-}
-
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.5rem;
-  max-width: 1000px;
-  margin: 0 auto;
-}
-
-.feature-card {
-  background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
-  font-weight: 500;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.feature-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-}
-
-/* ⚙️ FOOTER */
-footer {
-  background: #fff;
-  padding: 1.5rem 0;
-  width: 100%;
+.total-section {
+  padding: 30px;
+  background: #f7f9fc;
   text-align: center;
-  font-size: 0.95rem;
-  color: #666;
   border-top: 1px solid #eee;
-  margin-top: 3rem;
 }
 
-/* 📱 RESPONSIVE */
-@media (max-width: 768px) {
-  .main {
+.total {
+  font-size: 24px;
+  color: #2c3e50;
+  margin: 10px 0;
+}
+
+.btn-payer {
+  width: 100%;
+  max-width: 300px;
+  padding: 14px;
+  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-payer:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.footer-note {
+  margin-top: 20px;
+  color: #777;
+  font-size: 13px;
+}
+
+.footer-note a {
+  color: #6a11cb;
+  text-decoration: none;
+}
+
+@media (max-width: 600px) {
+  .offers {
     flex-direction: column;
-    padding: 3rem 2rem;
-    text-align: center;
   }
-
-  .hero-text {
-    text-align: center;
-  }
-
-  .btn-group {
-    justify-content: center;
+  .offer {
+    min-width: auto;
   }
 }
