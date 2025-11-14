@@ -1,41 +1,76 @@
+/* --------------------------- */
+/*  STYLE GÉNÉRAL - LOOK BOIS  */
+/* --------------------------- */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 body {
-  background: #f7f9fc;
+  background: linear-gradient(135deg, #d8c0a8 0%, #f3e5d0 100%);
+  background-size: cover;
+  animation: bgFade 2s ease-in-out;
 }
 
+/* Animation fond */
+@keyframes bgFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* --------------------------- */
+/*  CONTAINER PRINCIPAL        */
+/* --------------------------- */
 .container {
   width: 100%;
-  max-width: 800px;
-  background: white;
+  max-width: 850px;
+  background: #fff7ec;
   border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.12);
   margin: 40px auto;
   overflow: hidden;
+  border: 2px solid #c49b72;
+  animation: slideUp 0.8s ease-out;
 }
 
+/* Animation apparition */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --------------------------- */
+/*  HEADER                     */
+/* --------------------------- */
 header {
-  background: #2c3e50;
+  background: linear-gradient(135deg, #8b5a2b, #5d3317);
   color: white;
-  padding: 30px;
+  padding: 35px;
   text-align: center;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
 }
 
 header h1 {
-  font-size: 28px;
-  margin-bottom: 8px;
+  font-size: 30px;
+  letter-spacing: 1px;
 }
 
 header p {
-  font-size: 16px;
+  font-size: 15px;
   opacity: 0.9;
 }
 
+/* --------------------------- */
+/*  OFFRES                     */
+/* --------------------------- */
 .offers {
   display: flex;
   flex-wrap: wrap;
@@ -44,139 +79,150 @@ header p {
   justify-content: center;
 }
 
+/* Carte style bois */
 .offer {
   flex: 1;
-  min-width: 220px;
-  border: 1px solid #ddd;
+  min-width: 230px;
+  background: linear-gradient(135deg, #f5e1c8 0%, #ebd3b4 100%);
+  border: 2px solid #c49b72;
   border-radius: 12px;
   padding: 20px;
   text-align: center;
   transition: all 0.3s ease;
   position: relative;
   cursor: pointer;
+  box-shadow: 0 5px 12px rgba(0,0,0,0.1);
 }
 
 .offer:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.15);
 }
 
+/* Style lorsque sélectionné */
 .offer.selected {
-  border: 2px solid #6a11cb;
-  background: #f9f0ff;
-  transform: scale(1.03);
+  border: 3px solid #8b5a2b;
+  background: linear-gradient(135deg, #ffe7c7, #f3d7ac);
+  transform: scale(1.05);
+  box-shadow: 0 15px 28px rgba(0,0,0,0.18);
 }
 
+/* Badge populaire */
 .offer-popular {
-  border: 2px solid #6a11cb;
+  border: 3px solid #8b5a2b;
 }
 
 .popular-badge {
   position: absolute;
   top: -12px;
   right: 20px;
-  background: #6a11cb;
+  background: #8b5a2b;
   color: white;
   font-size: 12px;
   padding: 5px 10px;
   border-radius: 20px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
 }
 
 .offer-title {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 600;
-  color: #333;
-  margin-bottom: 10px;
+  color: #5d3317;
 }
 
 .offer-price {
-  font-size: 28px;
+  font-size: 30px;
   font-weight: bold;
-  color: #2c3e50;
+  color: #8b5a2b;
   margin-bottom: 15px;
 }
 
-.offer-features {
-  list-style: none;
-  margin-bottom: 20px;
-  text-align: left;
-}
-
+/* Liste des avantages */
 .offer-features li {
   margin-bottom: 10px;
-  color: #555;
+  color: #4b2a14;
+  font-size: 15px;
 }
 
 .offer-features li::before {
-  content: "✓";
-  color: #4CAF50;
+  content: "✓ ";
+  color: #2e7d32;
   font-weight: bold;
-  margin-right: 8px;
 }
 
+/* Bouton bois */
 .offer button {
   width: 100%;
   padding: 12px;
-  background: #4CAF50;
+  background: #8b5a2b;
   color: white;
   border: none;
   border-radius: 8px;
   font-size: 16px;
   cursor: pointer;
+  transition: 0.3s;
 }
 
 .offer button:hover {
-  background: #45a049;
+  background: #5d3317;
+  transform: scale(1.03);
 }
 
+/* --------------------------- */
+/*  TOTAL + BOUTON PAYER       */
+/* --------------------------- */
 .total-section {
   padding: 30px;
-  background: #f7f9fc;
+  background: #fff4e3;
   text-align: center;
-  border-top: 1px solid #eee;
+  border-top: 2px solid #d3b08a;
 }
 
 .total {
-  font-size: 24px;
-  color: #2c3e50;
-  margin: 10px 0;
+  font-size: 26px;
+  color: #5d3317;
 }
 
 .btn-payer {
   width: 100%;
-  max-width: 300px;
-  padding: 14px;
-  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  max-width: 320px;
+  padding: 15px;
+  background: linear-gradient(135deg, #8b5a2b, #5d3317);
   color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
+  border-radius: 10px;
+  font-size: 17px;
   cursor: pointer;
-  transition: all 0.3s;
+  font-weight: 600;
+  transition: 0.3s;
+  margin-top: 15px;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
 }
 
 .btn-payer:hover {
   opacity: 0.9;
-  transform: translateY(-2px);
+  transform: translateY(-3px);
 }
 
+/* --------------------------- */
+/*  INFO BAS DE PAGE           */
+/* --------------------------- */
 .footer-note {
   margin-top: 20px;
-  color: #777;
+  color: #6b4a2e;
   font-size: 13px;
 }
 
 .footer-note a {
-  color: #6a11cb;
+  color: #8b5a2b;
   text-decoration: none;
 }
 
-@media (max-width: 600px) {
+/* --------------------------- */
+/*  RESPONSIVE                 */
+/* --------------------------- */
+@media (max-width: 640px) {
   .offers {
     flex-direction: column;
-  }
-  .offer {
-    min-width: auto;
   }
 }
