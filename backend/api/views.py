@@ -1173,11 +1173,49 @@ def exporter_articles_text(request, article_id=None):
     return JsonResponse({"error": "Méthode non autorisée"}, status=405)
 
 @csrf_exempt
+def prix_planche(request, article_id):
+    article = get_object_or_404(Article, id=article_id)
+    
+    # 🔹 Calcul du nouveau prix total depuis les planches
+    total = Decimal("0.0")
+    for planche in article.planches.all():
+        longueur = Decimal(planche.longueur_initiale_mm or 0) / Decimal("10")  # Convertir mm en cm
+        largeur = Decimal(planche.largeur_initiale_mm or 0) / Decimal("10")
+        total += longueur * largeur * Decimal("0.25")  # Coefficient de prix par cm²
+
+    # 🔹 Calcul propre du prix restant
+    ancien_total = article.prix_total or Decimal("0.0")
+    ancien_restant = article.prix_restant or Decimal("0.0")
+
+    article.prix_total = total
+
+    # ✅ Si aucun paiement n'a été enregistré, le restant = total
+    if ancien_total == 0 or ancien_restant == ancien_total:
+        article.prix_restant = total
+    else:
+        # ✅ Si une partie a été payée, on conserve la même somme déjà payée
+        montant_paye = ancien_total - ancien_restant
+        nouveau_restant = total - montant_paye
+        article.prix_restant = max(Decimal("0.0"), nouveau_restant)
+
+    article.save()
+
+    return JsonResponse({
+        "article": {
+            "id": article.id,
+            "nom": article.nom,
+            "type": article.type,
+            "epaisseur": str(article.epaisseur),
+            "prix_total": str(round(article.prix_total, 2)),
+            "prix_restant": str(round(article.prix_restant, 2)),
+            "prix_planche": str(round(total, 2))
+        }
+    }, status=200)
+
+@csrf_exempt
 def prix_total_detail(request, article_id):
     article = get_object_or_404(Article, id=article_id)
-    type_de_bois = article.type
     # 🔹 Calcul du nouveau prix total
-    
     total = Decimal("0.0")
     for mesure in article.mesures.all():
         longueur = Decimal(mesure.longueur or 0)

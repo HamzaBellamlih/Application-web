@@ -41,5 +41,5 @@ urlpatterns = [
     path("schema_pdf/<int:article_id>/", views.schema_pdf, name="schema_pdf"),
     path('valider_decouppage/<int:article_id>/', views.valider_decouppage, name='valider_decouppage'),
     path('total_mesures', views.afficher_total_mesures, name='afficher_total_mesures'),
-    path('ocr_image', views.ocr_image, name='ocr_image'),
+    path('prix_planche/<int:article_id>/', views.prix_planche, name='prix_planche'),
 ]
