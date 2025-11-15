@@ -1175,14 +1175,15 @@ def exporter_articles_text(request, article_id=None):
 @csrf_exempt
 def prix_total_detail(request, article_id):
     article = get_object_or_404(Article, id=article_id)
-
+    type_de_bois = article.type
     # 🔹 Calcul du nouveau prix total
+    
     total = Decimal("0.0")
     for mesure in article.mesures.all():
         longueur = Decimal(mesure.longueur or 0)
         largeur = Decimal(mesure.largeur or 0)
         nombre = Decimal(mesure.nombre_de_fois or 0)
-        total += longueur * largeur * nombre * Decimal("1.5")
+        total += longueur * largeur * nombre * Decimal("0.15")
 
     # 🔹 Calcul propre du prix restant
     ancien_total = article.prix_total or Decimal("0.0")
@@ -1270,8 +1271,8 @@ def paiement(request, article_id):
         "manquant": to_float_or_none(manquant),
     }, status=200)
 
-def changer_prix_article(request, atelier_id):
-    article = get_object_or_404(Article, id=atelier_id)
+def changer_prix_article(request, article_id):
+    article = get_object_or_404(Article, id=article_id)
     if request.method == "POST":
         # Ici tu pourrais traiter la modification du prix_payer si besoin
         return JsonResponse({
@@ -1283,16 +1284,16 @@ def changer_prix_article(request, atelier_id):
             }
         })
     return JsonResponse({
-        "atelier": {
+        "article": {
             "id": article.id,
             "nom": article.type,
             "epaisseur": article.epaisseur
         },
-        "message": "GET request - données de l'atelier"
+        "message": "GET request - données de l'article"
     })
 
-def valider_mesure(request, atelier_id):
-    article = get_object_or_404(Article, id=atelier_id)
+def valider_mesure(request, article_id):
+    article = get_object_or_404(Article, id=article_id)
     if request.method == "POST":
         longueur = request.POST.get("longueur")
         largeur = request.POST.get("largeur")
