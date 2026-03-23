@@ -1,11 +1,6 @@
-import csv
 from decimal import Decimal
-from tkinter import Image
 from django.http import HttpResponse, JsonResponse, Http404
-from django.shortcuts import get_object_or_404, redirect
-import numpy as np
-import pytesseract
-import cv2
+from django.shortcuts import get_object_or_404
 import math
 import datetime
 from api.models import Client, Article, Mesure, Planche
@@ -13,188 +8,222 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 import jwt
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.exceptions import AuthenticationFailed
 from django.conf import settings
 
-@csrf_exempt
-def hello(request):
-    return JsonResponse({"message": "Bonjour depuis Django"})
 
 @csrf_exempt
 def inscription_client(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         try:
             data = json.loads(request.body)
-            champs = ['username', 'password', 'nom', 'prenom', 'email', 'adresse', 'telephone']
+            champs = [
+                "username",
+                "password",
+                "nom",
+                "prenom",
+                "email",
+                "adresse",
+                "telephone",
+            ]
             for champ in champs:
                 if champ not in data or not data[champ]:
-                    return JsonResponse({'message': f'Le champ {champ} est requis.'}, status=400)
+                    return JsonResponse(
+                        {"message": f"Le champ {champ} est requis."}, status=400
+                    )
 
-            username = data['username']
+            username = data["username"]
 
             # Vérifier unicité username et email
             if Client.objects.filter(username=username).exists():
-                return JsonResponse({'message': 'Nom d’utilisateur déjà utilisé.'}, status=400)
-            if Client.objects.filter(email=data['email']).exists():
-                return JsonResponse({'message': 'Email déjà utilisé.'}, status=400)
+                return JsonResponse(
+                    {"message": "Nom d’utilisateur déjà utilisé."}, status=400
+                )
+            if Client.objects.filter(email=data["email"]).exists():
+                return JsonResponse({"message": "Email déjà utilisé."}, status=400)
 
             # 🔹 Créer le client
             client = Client.objects.create(
                 username=username,
-                password=data['password'],  # ⚠️ ici je conseille de hasher (voir ci-dessous)
-                nom=data['nom'],
-                prenom=data['prenom'],
-                email=data['email'],
-                adresse=data['adresse'],
-                telephone=data['telephone']
+                password=data["password"],
+                nom=data["nom"],
+                prenom=data["prenom"],
+                email=data["email"],
+                adresse=data["adresse"],
+                telephone=data["telephone"],
             )
 
             # 🔹 Retourner l'ID du client
-            return JsonResponse({
-                'message': 'Inscription réussie !',
-                'id': client.id
-            }, status=201)
+            return JsonResponse(
+                {"message": "Inscription réussie !", "id": client.id}, status=201
+            )
 
         except json.JSONDecodeError:
-            return JsonResponse({'message': 'Données invalides.'}, status=400)
+            return JsonResponse({"message": "Données invalides."}, status=400)
     else:
-        return JsonResponse({'message': 'Méthode non autorisée.'}, status=405)
+        return JsonResponse({"message": "Méthode non autorisée."}, status=405)
+
 
 @csrf_exempt
 def login(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         data = json.loads(request.body)
-        username = data.get('username')
-        password = data.get('password')
+        username = data.get("username")
+        password = data.get("password")
         try:
             user = Client.objects.get(username=username)
             if user.password == password:
                 # Créer le payload JWT
                 payload = {
-                    'user_id': user.id,
-                    'username': user.username,
-                    'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1),  # Expiration dans 1h
-                    'iat': datetime.datetime.utcnow()
+                    "user_id": user.id,
+                    "username": user.username,
+                    "exp": datetime.datetime.utcnow()
+                    + datetime.timedelta(hours=1),  # Expiration dans 1h
+                    "iat": datetime.datetime.utcnow(),
                 }
-                
+
                 # Générer le token JWT
-                token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
-                
+                token = jwt.encode(payload, settings.SECRET_KEY, algorithm="HS256")
+
                 # Retourner le token ET le message de succès
-                return JsonResponse({
-                    'token': token,
-                    'message': 'Connexion réussie !'
-                }, status=200)
+                return JsonResponse(
+                    {"token": token, "message": "Connexion réussie !"}, status=200
+                )
             else:
-                return JsonResponse({'message': 'Nom d’utilisateur ou mot de passe incorrect'}, status=400)
+                return JsonResponse(
+                    {"message": "Nom d’utilisateur ou mot de passe incorrect"},
+                    status=400,
+                )
         except Client.DoesNotExist:
-            return JsonResponse({'message': 'Nom d’utilisateur ou mot de passe incorrect'}, status=400)
-    return JsonResponse({'message': 'Méthode non autorisée'}, status=405)
+            return JsonResponse(
+                {"message": "Nom d’utilisateur ou mot de passe incorrect"}, status=400
+            )
+    return JsonResponse({"message": "Méthode non autorisée"}, status=405)
+
 
 @csrf_exempt
 def liste_clients(request):
-    if request.method == 'GET':
+    if request.method == "GET":
         clients = Client.objects.all().values(
-            'id','username', 'nom', 'prenom', 'email', 'adresse', 'telephone'
+            "id", "username", "nom", "prenom", "email", "adresse", "telephone"
         )
         return JsonResponse(list(clients), safe=False)
     else:
-        return JsonResponse({'message': 'Méthode non autorisée.'}, status=405)
+        return JsonResponse({"message": "Méthode non autorisée."}, status=405)
+
 
 @csrf_exempt
 def get_client_par_username(request):
-    if request.method == 'GET':
-        auth_header = request.headers.get('Authorization')
+    if request.method == "GET":
+        auth_header = request.headers.get("Authorization")
 
-        if not auth_header or not auth_header.startswith('Bearer '):
-            return JsonResponse({'error': 'Token manquant ou invalide'}, status=401)
+        if not auth_header or not auth_header.startswith("Bearer "):
+            return JsonResponse({"error": "Token manquant ou invalide"}, status=401)
 
-        token = auth_header.split(' ')[1]
+        token = auth_header.split(" ")[1]
 
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
-            username = payload.get('username')
+            username = payload.get("username")
 
             if not username:
-                return JsonResponse({'error': 'Username manquant dans le token'}, status=400)
+                return JsonResponse(
+                    {"error": "Username manquant dans le token"}, status=400
+                )
 
             try:
                 client = Client.objects.get(username=username)
-                return JsonResponse({
-                    'username': client.username,
-                    'nom': client.nom,
-                    'prenom': client.prenom,
-                    'email': client.email,
-                    'adresse': client.adresse,
-                    'telephone': client.telephone,
-                })
+                return JsonResponse(
+                    {
+                        "username": client.username,
+                        "nom": client.nom,
+                        "prenom": client.prenom,
+                        "email": client.email,
+                        "adresse": client.adresse,
+                        "telephone": client.telephone,
+                    }
+                )
             except Client.DoesNotExist:
-                return JsonResponse({'error': 'Client non trouvé'}, status=404)
+                return JsonResponse({"error": "Client non trouvé"}, status=404)
 
         except ExpiredSignatureError:
-            return JsonResponse({'error': 'Token expiré'}, status=401)
+            return JsonResponse({"error": "Token expiré"}, status=401)
         except InvalidTokenError:
-            return JsonResponse({'error': 'Token invalide'}, status=401)
+            return JsonResponse({"error": "Token invalide"}, status=401)
 
-    return JsonResponse({'error': 'Méthode non autorisée'}, status=405)
+    return JsonResponse({"error": "Méthode non autorisée"}, status=405)
+
 
 def statistiques_articles(request):
-    if request.method == 'GET':
+    if request.method == "GET":
         articles = Article.objects.all()
         articles_data = []
         total_general = 0
         for article in articles:
             prix_payer_total = 0
             for m in article.mesures.all():
-                prix_payer_total += float(m.longueur or 0) * float(m.largeur or 0) * float(m.nombre_de_fois or 0) * 0.5
-            articles_data.append({
-                "id": article.id,
-                "type": article.type,
-                "prix_payer_total": prix_payer_total,
-            })
+                prix_payer_total += (
+                    float(m.longueur or 0)
+                    * float(m.largeur or 0)
+                    * float(m.nombre_de_fois or 0)
+                    * 0.5
+                )
+            articles_data.append(
+                {
+                    "id": article.id,
+                    "type": article.type,
+                    "prix_payer_total": prix_payer_total,
+                }
+            )
             total_general += prix_payer_total
 
         data = {
             "nombre_articles": articles.count(),
             "total_general": total_general,
-            "articles": articles_data
+            "articles": articles_data,
         }
         return JsonResponse(data, status=200)
     else:
         return JsonResponse({"message": "Méthode non autorisée"}, status=405)
 
+
 def liste_articles(request):
-    if request.method == 'GET':
+    if request.method == "GET":
         articles = Article.objects.all()
         articles_list = []
 
         for article in articles:
-            articles_list.append({
-                "id": article.id,
-                "type": article.type,
-                "date": str(article.date),
-                "description": article.description if hasattr(article, "description") else "",
-            })
+            articles_list.append(
+                {
+                    "id": article.id,
+                    "type": article.type,
+                    "date": str(article.date),
+                    "description": (
+                        article.description if hasattr(article, "description") else ""
+                    ),
+                }
+            )
 
         return JsonResponse({"articles": articles_list}, status=200)
     else:
         return JsonResponse({"message": "Méthode non autorisée"}, status=405)
+
 
 @csrf_exempt
 def supprimer_article_client(request, article_id):
     if request.method != "POST":
         return JsonResponse({"message": "Méthode non autorisée."}, status=405)
 
-    auth_header = request.headers.get('Authorization')
-    if not auth_header or not auth_header.startswith('Bearer '):
-        return JsonResponse({"message": "Token d'authentification manquant."}, status=401)
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return JsonResponse(
+            {"message": "Token d'authentification manquant."}, status=401
+        )
 
-    token = auth_header.split(' ')[1]
+    token = auth_header.split(" ")[1]
 
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
-        username = payload.get('username')
+        username = payload.get("username")
         if not username:
             return JsonResponse({"message": "Token invalide."}, status=401)
     except jwt.ExpiredSignatureError:
@@ -207,22 +236,24 @@ def supprimer_article_client(request, article_id):
         article = Article.objects.get(id=article_id)
     except Article.DoesNotExist:
         return JsonResponse({"message": "Article introuvable."}, status=404)
-    
+
     article.delete()
     return JsonResponse({"message": "Article supprimé avec succès."}, status=200)
+
 
 @csrf_exempt
 def supprimer_mesure_client(request, mesure_id):
     try:
         mesure = Mesure.objects.get(id=mesure_id)
     except Mesure.DoesNotExist:
-        return JsonResponse({'message': 'Mesure introuvable.'}, status=404)
+        return JsonResponse({"message": "Mesure introuvable."}, status=404)
 
     if request.method == "DELETE":
         mesure.delete()
-        return JsonResponse({'message': 'Mesure supprimée avec succès.'}, status=200)
+        return JsonResponse({"message": "Mesure supprimée avec succès."}, status=200)
     else:
-        return JsonResponse({'message': 'Méthode non autorisée.'}, status=405)
+        return JsonResponse({"message": "Méthode non autorisée."}, status=405)
+
 
 @csrf_exempt
 def modifier_article_client(request, article_id):
@@ -273,6 +304,7 @@ def modifier_article_client(request, article_id):
 
     return JsonResponse({"message": "Atelier modifié avec succès."}, status=200)
 
+
 @csrf_exempt
 def modifier_mesure_client(request, mesure_id):
     if request.method != "PUT":
@@ -306,12 +338,13 @@ def modifier_mesure_client(request, mesure_id):
 
     return JsonResponse({"message": "Mesure modifiée avec succès."}, status=200)
 
+
 @csrf_exempt
 def statistiques_articles_client(request):
     client_id = request.GET.get("id")
     if not client_id:
         return JsonResponse({"message": "ID client requis."}, status=400)
-    
+
     try:
         client = Client.objects.get(id=client_id)
     except Client.DoesNotExist:
@@ -324,12 +357,19 @@ def statistiques_articles_client(request):
     for article in articles:
         prix_payer_total = 0
         for m in article.mesures.all():
-            prix_payer_total += float(m.longueur or 0) * float(m.largeur or 0) * float(m.nombre_de_fois or 0) * 0.5
-        articles_data.append({
-            "id": article.id,
-            "nom": getattr(article, "nom", ""),
-            "prix_payer_total": prix_payer_total,
-        })
+            prix_payer_total += (
+                float(m.longueur or 0)
+                * float(m.largeur or 0)
+                * float(m.nombre_de_fois or 0)
+                * 0.5
+            )
+        articles_data.append(
+            {
+                "id": article.id,
+                "nom": getattr(article, "nom", ""),
+                "prix_payer_total": prix_payer_total,
+            }
+        )
         total_general += prix_payer_total
 
     data = {
@@ -344,6 +384,7 @@ def statistiques_articles_client(request):
         "articles": articles_data,
     }
     return JsonResponse(data, status=200)
+
 
 @csrf_exempt
 def ajouter_client_client(request):
@@ -365,20 +406,16 @@ def ajouter_client_client(request):
         return JsonResponse({"message": "Cet email est déjà utilisé."}, status=400)
 
     client = Client.objects.create(
-        nom=nom,
-        prenom=prenom,
-        age=age,
-        email=email,
-        telephone=telephone
+        nom=nom, prenom=prenom, age=age, email=email, telephone=telephone
     )
 
     # Si tu veux stocker l'id dans la session :
-    request.session['dernier_client_id'] = client.id
+    request.session["dernier_client_id"] = client.id
 
-    return JsonResponse({
-        "message": "Client ajouté avec succès.",
-        "client_id": client.id
-    }, status=201)
+    return JsonResponse(
+        {"message": "Client ajouté avec succès.", "client_id": client.id}, status=201
+    )
+
 
 @csrf_exempt
 def ajouter_client(request):
@@ -394,25 +431,21 @@ def ajouter_client(request):
     prenom = data.get("prenom")
     email = data.get("email")
     telephone = data.get("telephone")
-    adresse= data.get("adresse")
+    adresse = data.get("adresse")
 
     if Client.objects.filter(email=email).exists():
         return JsonResponse({"message": "Cet email est déjà utilisé."}, status=400)
 
     client = Client.objects.create(
-        nom=nom,
-        prenom=prenom,
-        email=email,
-        telephone=telephone,
-        adresse=adresse
+        nom=nom, prenom=prenom, email=email, telephone=telephone, adresse=adresse
     )
 
-    request.session['dernier_client_id'] = client.id
+    request.session["dernier_client_id"] = client.id
 
-    return JsonResponse({
-        "message": "Client ajouté avec succès.",
-        "client_id": client.id
-    }, status=201)
+    return JsonResponse(
+        {"message": "Client ajouté avec succès.", "client_id": client.id}, status=201
+    )
+
 
 @csrf_exempt
 def ajouter_article_client(request):
@@ -420,26 +453,28 @@ def ajouter_article_client(request):
         return JsonResponse({"message": "Méthode non autorisée."}, status=405)
 
     # Vérifier l'authentification via le token
-    auth_header = request.headers.get('Authorization')
-    if not auth_header or not auth_header.startswith('Bearer '):
-        return JsonResponse({"message": "Token d'authentification manquant."}, status=401)
-    
-    auth_parts = auth_header.split(' ')
-    token = auth_parts[1] 
-    
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return JsonResponse(
+            {"message": "Token d'authentification manquant."}, status=401
+        )
+
+    auth_parts = auth_header.split(" ")
+    token = auth_parts[1]
+
     try:
         # Décoder le token JWT pour vérifier l'authentification
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
-        username = payload.get('username')
-        
+        username = payload.get("username")
+
         if not username:
             return JsonResponse({"message": "Token invalide."}, status=401)
-            
+
     except jwt.ExpiredSignatureError:
         return JsonResponse({"message": "Token expiré."}, status=401)
     except jwt.InvalidTokenError:
         return JsonResponse({"message": "Token invalide."}, status=401)
-    
+
     # Charger les données JSON
     try:
         data = json.loads(request.body)
@@ -450,11 +485,13 @@ def ajouter_article_client(request):
     client_username = data.get("client_username")
     if not client_username:
         return JsonResponse({"message": "Username du client manquant."}, status=400)
-    
+
     # Vérifier que le token correspond au client
     if client_username != username:
-        return JsonResponse({"message": "Token ne correspond pas au client."}, status=401)
-    
+        return JsonResponse(
+            {"message": "Token ne correspond pas au client."}, status=401
+        )
+
     try:
         client = Client.objects.get(username=client_username)
     except Client.DoesNotExist:
@@ -467,17 +504,17 @@ def ajouter_article_client(request):
             nom=data.get("nom"),
             type=data.get("type"),
             epaisseur=data.get("epaisseur"),
-            valide=False
+            valide=False,
         )
-        
+
         # Planche associée
         planche_data = data.get("planche")
         Planche.objects.create(
             article=article,
             longueur_initiale_mm=planche_data.get("longueur_initiale_mm"),
             largeur_initiale_mm=planche_data.get("largeur_initiale_mm"),
-            )
-        
+        )
+
         # Mesures
         nb_mesures = int(data.get("nb_mesures", 0))
         for i in range(nb_mesures):
@@ -493,10 +530,17 @@ def ajouter_article_client(request):
                 encadrement_bas=m.get("encadrement_bas", False),
             )
 
-        return JsonResponse({"message": "Article enregistré avec succès.", "article_id": article.id}, status=201)
+        return JsonResponse(
+            {"message": "Article enregistré avec succès.", "article_id": article.id},
+            status=201,
+        )
 
     except Exception as e:
-        return JsonResponse({"message": f"Erreur lors de la création de l'article : {str(e)}"}, status=500)
+        return JsonResponse(
+            {"message": f"Erreur lors de la création de l'article : {str(e)}"},
+            status=500,
+        )
+
 
 @csrf_exempt
 def liste_articles_client(request):
@@ -506,7 +550,9 @@ def liste_articles_client(request):
     # Vérification du token
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
-        return JsonResponse({"message": "Token d'authentification manquant."}, status=401)
+        return JsonResponse(
+            {"message": "Token d'authentification manquant."}, status=401
+        )
 
     token = auth_header.split(" ")[1]
     try:
@@ -521,7 +567,9 @@ def liste_articles_client(request):
 
     # Vérification du client
     try:
-        client = Client.objects.get(username=username)  # ⚠️ Vérifie bien que Client a un champ `username`
+        client = Client.objects.get(
+            username=username
+        )  # ⚠️ Vérifie bien que Client a un champ `username`
     except Client.DoesNotExist:
         return JsonResponse({"message": "Client introuvable."}, status=404)
 
@@ -535,44 +583,65 @@ def liste_articles_client(request):
         if hasattr(article, "planches") and article.planches.exists():
             planche_obj = article.planches.first()
             planche_data = {
-                "longueur_initiale_mm": getattr(planche_obj, "longueur_initiale_mm", None),
-                "largeur_initiale_mm": getattr(planche_obj, "largeur_initiale_mm", None),
+                "longueur_initiale_mm": getattr(
+                    planche_obj, "longueur_initiale_mm", None
+                ),
+                "largeur_initiale_mm": getattr(
+                    planche_obj, "largeur_initiale_mm", None
+                ),
             }
 
         # Mesures associées
-        mesures_list = [
-            {
-                "longueur": m.longueur,
-                "largeur": m.largeur,
-                "nombre_de_fois": m.nombre_de_fois,
-                "encadrement_droite": m.encadrement_droite,
-                "encadrement_gauche": m.encadrement_gauche,
-                "encadrement_haut": m.encadrement_haut,
-                "encadrement_bas": m.encadrement_bas,
-            }
-            for m in getattr(article, "mesures").all()
-        ] if hasattr(article, "mesures") else []
+        mesures_list = (
+            [
+                {
+                    "longueur": m.longueur,
+                    "largeur": m.largeur,
+                    "nombre_de_fois": m.nombre_de_fois,
+                    "encadrement_droite": m.encadrement_droite,
+                    "encadrement_gauche": m.encadrement_gauche,
+                    "encadrement_haut": m.encadrement_haut,
+                    "encadrement_bas": m.encadrement_bas,
+                }
+                for m in getattr(article, "mesures").all()
+            ]
+            if hasattr(article, "mesures")
+            else []
+        )
 
         # Ajout dans la réponse
-        data.append({
-            "id": article.id,
-            "nom": article.nom,
-            "planche": planche_data,
-            "type": article.type,
-            "epaisseur": str(article.epaisseur),
-            "date_creation": article.date_creation.strftime("%Y-%m-%d %H:%M") if article.date_creation else "",
-            "date_modification": article.date_modification.strftime("%Y-%m-%d %H:%M") if article.date_modification else "",
-            "mesures": mesures_list,
-        })
+        data.append(
+            {
+                "id": article.id,
+                "nom": article.nom,
+                "planche": planche_data,
+                "type": article.type,
+                "epaisseur": str(article.epaisseur),
+                "date_creation": (
+                    article.date_creation.strftime("%Y-%m-%d %H:%M")
+                    if article.date_creation
+                    else ""
+                ),
+                "date_modification": (
+                    article.date_modification.strftime("%Y-%m-%d %H:%M")
+                    if article.date_modification
+                    else ""
+                ),
+                "mesures": mesures_list,
+            }
+        )
 
     return JsonResponse(data, safe=False, status=200)
+
 
 @csrf_exempt
 def modifier_client(request, client_id):
     try:
         client = Client.objects.get(id=client_id)
     except Client.DoesNotExist:
-        return JsonResponse({"success": False, "message": "Client introuvable"}, status=404)
+        return JsonResponse(
+            {"success": False, "message": "Client introuvable"}, status=404
+        )
 
     if request.method == "PUT":
         try:
@@ -585,11 +654,18 @@ def modifier_client(request, client_id):
             client.adresse = data.get("adresse", client.adresse)
 
             client.save()
-            return JsonResponse({"success": True, "message": "Client modifié avec succès"})
+            return JsonResponse(
+                {"success": True, "message": "Client modifié avec succès"}
+            )
         except Exception as e:
-            return JsonResponse({"success": False, "message": f"Erreur : {str(e)}"}, status=400)
+            return JsonResponse(
+                {"success": False, "message": f"Erreur : {str(e)}"}, status=400
+            )
 
-    return JsonResponse({"success": False, "message": "Méthode non autorisée"}, status=405)
+    return JsonResponse(
+        {"success": False, "message": "Méthode non autorisée"}, status=405
+    )
+
 
 @csrf_exempt
 def supprimer_client(request, client_id):
@@ -597,9 +673,14 @@ def supprimer_client(request, client_id):
 
     if request.method == "DELETE":
         client.delete()
-        return JsonResponse({"success": True, "message": "Client supprimé avec succès."})
-    
-    return JsonResponse({"success": False, "message": "Méthode non autorisée"}, status=405)
+        return JsonResponse(
+            {"success": True, "message": "Client supprimé avec succès."}
+        )
+
+    return JsonResponse(
+        {"success": False, "message": "Méthode non autorisée"}, status=405
+    )
+
 
 def liste_articles_clients(request):
     if request.method != "GET":
@@ -617,49 +698,64 @@ def liste_articles_clients(request):
         client_total = 0.0
         client_restant = 0.0
 
-        for article in client.article_set.all():  # relation Client -> Article (clé étrangère)
+        for (
+            article
+        ) in client.article_set.all():  # relation Client -> Article (clé étrangère)
             prix_total = float(article.prix_total or 0.0)
             prix_restant = float(article.prix_restant or 0.0)
 
-            articles_data.append({
-                "id": article.id,
-                "nom": article.nom,
-                "type": article.type,
-                "epaisseur": str(article.epaisseur),
-                "date_creation": article.date_creation.strftime("%Y-%m-%d %H:%M:%S") if article.date_creation else None,
-                "prix_total": prix_total,
-                "prix_restant": prix_restant,
-            })
+            articles_data.append(
+                {
+                    "id": article.id,
+                    "nom": article.nom,
+                    "type": article.type,
+                    "epaisseur": str(article.epaisseur),
+                    "date_creation": (
+                        article.date_creation.strftime("%Y-%m-%d %H:%M:%S")
+                        if article.date_creation
+                        else None
+                    ),
+                    "prix_total": prix_total,
+                    "prix_restant": prix_restant,
+                }
+            )
 
             # Ajout aux sous-totaux
             client_total += prix_total
             client_restant += prix_restant
 
         # Ajout des totaux client → données
-        data.append({
-            "client": {
-                "id": client.id,
-                "nom": client.nom,
-                "prenom": client.prenom,
-                "email": client.email,
-                "telephone": getattr(client, "telephone", ""),
-            },
-            "articles": articles_data,
-            "total_client": client_total,
-            "restant_client": client_restant,
-        })
+        data.append(
+            {
+                "client": {
+                    "id": client.id,
+                    "nom": client.nom,
+                    "prenom": client.prenom,
+                    "email": client.email,
+                    "telephone": getattr(client, "telephone", ""),
+                },
+                "articles": articles_data,
+                "total_client": client_total,
+                "restant_client": client_restant,
+            }
+        )
 
         # Ajout aux totaux globaux
         total_prix_total += client_total
         total_prix_restant += client_restant
 
-    return JsonResponse({
-        "clients": data,
-        "totaux": {
-            "prix_total_global": total_prix_total,
-            "prix_restant_global": total_prix_restant,
-        }
-    }, safe=False, status=200)
+    return JsonResponse(
+        {
+            "clients": data,
+            "totaux": {
+                "prix_total_global": total_prix_total,
+                "prix_restant_global": total_prix_restant,
+            },
+        },
+        safe=False,
+        status=200,
+    )
+
 
 @csrf_exempt
 def liste_articles_valideur(request):
@@ -676,52 +772,65 @@ def liste_articles_valideur(request):
             # Mesures
             mesures_data = []
             for mesure in article.mesures.all():
-                mesures_data.append({
-                    "id": mesure.id,
-                    "longueur": float(mesure.longueur),
-                    "largeur": float(mesure.largeur),
-                    "nombre_de_fois": mesure.nombre_de_fois,
-                    "encadrement": {
-                        "droite": mesure.encadrement_droite,
-                        "gauche": mesure.encadrement_gauche,
-                        "haut": mesure.encadrement_haut,
-                        "bas": mesure.encadrement_bas,
+                mesures_data.append(
+                    {
+                        "id": mesure.id,
+                        "longueur": float(mesure.longueur),
+                        "largeur": float(mesure.largeur),
+                        "nombre_de_fois": mesure.nombre_de_fois,
+                        "encadrement": {
+                            "droite": mesure.encadrement_droite,
+                            "gauche": mesure.encadrement_gauche,
+                            "haut": mesure.encadrement_haut,
+                            "bas": mesure.encadrement_bas,
+                        },
                     }
-                })
+                )
 
             # Planches et leurs pièces
             planches_data = []
             for planche in article.planches.all():
-                planches_data.append({
-                    "longueur_initiale_mm": planche.longueur_initiale_mm,
-                    "largeur_initiale_mm": planche.largeur_initiale_mm,
-                })
+                planches_data.append(
+                    {
+                        "longueur_initiale_mm": planche.longueur_initiale_mm,
+                        "largeur_initiale_mm": planche.largeur_initiale_mm,
+                    }
+                )
 
             # Article
-            articles_data.append({
-                "id": article.id,
-                "nom": article.nom,
-                "date_creation": article.date_creation.strftime("%Y-%m-%d %H:%M:%S"),
-                "date_modification": article.date_modification.strftime("%Y-%m-%d %H:%M:%S"),
-                "mesures": mesures_data,
-                "planches": planches_data,
-            })
+            articles_data.append(
+                {
+                    "id": article.id,
+                    "nom": article.nom,
+                    "date_creation": article.date_creation.strftime(
+                        "%Y-%m-%d %H:%M:%S"
+                    ),
+                    "date_modification": article.date_modification.strftime(
+                        "%Y-%m-%d %H:%M:%S"
+                    ),
+                    "mesures": mesures_data,
+                    "planches": planches_data,
+                }
+            )
 
         # Client
-        data.append({
-            "client": {
-                "id": client.id,
-                "username": client.username,
-                "nom": client.nom,
-                "prenom": client.prenom,
-                "email": client.email,
-                "telephone": client.telephone,
-                "adresse": client.adresse,
-            },
-            "articles": articles_data,
-        })
+        data.append(
+            {
+                "client": {
+                    "id": client.id,
+                    "username": client.username,
+                    "nom": client.nom,
+                    "prenom": client.prenom,
+                    "email": client.email,
+                    "telephone": client.telephone,
+                    "adresse": client.adresse,
+                },
+                "articles": articles_data,
+            }
+        )
 
     return JsonResponse({"clients": data}, safe=False, status=200)
+
 
 @csrf_exempt
 def liste_article_valideur(request, article_id):
@@ -736,23 +845,32 @@ def liste_article_valideur(request, article_id):
 
         # 🔹 Vérifie bien que tu as un related_name sur ton modèle
         mesures = []
-        for m in article.mesure_set.all():  # ou article.mesures.all() si tu as related_name="mesures"
-            mesures.append({
-                "longueur": m.longueur,
-                "largeur": m.largeur,
-                "nombre_de_fois": m.nombre_de_fois,
-            })
+        for (
+            m
+        ) in (
+            article.mesure_set.all()
+        ):  # ou article.mesures.all() si tu as related_name="mesures"
+            mesures.append(
+                {
+                    "longueur": m.longueur,
+                    "largeur": m.largeur,
+                    "nombre_de_fois": m.nombre_de_fois,
+                }
+            )
 
-        return JsonResponse({
-            "article": {
-                "id": article.id,
-                "nom": article.type,
-                "epaisseur": article.epaisseur,
-                "mesures": mesures,   # ✅ on envoie la liste des mesures
-            },
-            "board_length": default_longueur,
-            "board_width": default_largeur,
-        })
+        return JsonResponse(
+            {
+                "article": {
+                    "id": article.id,
+                    "nom": article.type,
+                    "epaisseur": article.epaisseur,
+                    "mesures": mesures,  # ✅ on envoie la liste des mesures
+                },
+                "board_length": default_longueur,
+                "board_width": default_largeur,
+            }
+        )
+
 
 @csrf_exempt
 def liste_articles_valideur(request):
@@ -764,26 +882,30 @@ def liste_articles_valideur(request):
 
     for client in clients:
         articles_data = []
-        clients_data.append({
-            "id": client.id,
-            "prenom": client.prenom,
-            "nom": client.nom,
-        })
+        clients_data.append(
+            {
+                "id": client.id,
+                "prenom": client.prenom,
+                "nom": client.nom,
+            }
+        )
         for article in client.article_set.all():  # ✅ articles liés au client
 
             # Récupérer les mesures liées
             mesures_data = []
             for mesure in article.mesures.all():
-                mesures_data.append({
-                    "id": mesure.id,
-                    "longueur": float(mesure.longueur),
-                    "largeur": float(mesure.largeur),
-                    "nombre_de_fois": mesure.nombre_de_fois,
-                    "encadrement_droite": mesure.encadrement_droite,
-                    "encadrement_gauche": mesure.encadrement_gauche,
-                    "encadrement_haut": mesure.encadrement_haut,
-                    "encadrement_bas": mesure.encadrement_bas,
-                })
+                mesures_data.append(
+                    {
+                        "id": mesure.id,
+                        "longueur": float(mesure.longueur),
+                        "largeur": float(mesure.largeur),
+                        "nombre_de_fois": mesure.nombre_de_fois,
+                        "encadrement_droite": mesure.encadrement_droite,
+                        "encadrement_gauche": mesure.encadrement_gauche,
+                        "encadrement_haut": mesure.encadrement_haut,
+                        "encadrement_bas": mesure.encadrement_bas,
+                    }
+                )
 
             # Récupérer la première planche si dispo
             planche = article.planches.first()
@@ -793,26 +915,35 @@ def liste_articles_valideur(request):
                     "longueur_initiale_mm": float(planche.longueur_initiale_mm),
                     "largeur_initiale_mm": float(planche.largeur_initiale_mm),
                 }
-                
-            # Construire l'article
-            articles_data.append({
-                "id": article.id,
-                "nom": article.nom,
-                "epaisseur": float(article.epaisseur),
-                "date_creation": article.date_creation.strftime("%d/%m/%Y, %H:%M") if article.date_creation else None,
-                "valide": article.valide,
-                "mesures": mesures_data,
-                "planches": [planche_data] if planche_data else [],
-            })
 
-        clients_data.append({
-            "id": client.id,
-            "prenom": client.prenom,
-            "nom": client.nom,
-            "articles": articles_data,
-        })
+            # Construire l'article
+            articles_data.append(
+                {
+                    "id": article.id,
+                    "nom": article.nom,
+                    "epaisseur": float(article.epaisseur),
+                    "date_creation": (
+                        article.date_creation.strftime("%d/%m/%Y, %H:%M")
+                        if article.date_creation
+                        else None
+                    ),
+                    "valide": article.valide,
+                    "mesures": mesures_data,
+                    "planches": [planche_data] if planche_data else [],
+                }
+            )
+
+        clients_data.append(
+            {
+                "id": client.id,
+                "prenom": client.prenom,
+                "nom": client.nom,
+                "articles": articles_data,
+            }
+        )
 
     return JsonResponse({"clients": clients_data}, safe=False)
+
 
 @csrf_exempt
 def ajouter_article(request):
@@ -821,12 +952,16 @@ def ajouter_article(request):
             data = json.loads(request.body)
             nom = data.get("nom")
             epaisseur = data.get("epaisseur")
-            client_id = data.get("client_id") or request.session.get("dernier_client_id")
+            client_id = data.get("client_id") or request.session.get(
+                "dernier_client_id"
+            )
             client = Client.objects.get(id=client_id) if client_id else None
             nb_mesures = int(data.get("nb_mesures", 1))
 
             # Création de l'atelier
-            article = Article.objects.create(nom=nom, epaisseur=epaisseur, client=client)
+            article = Article.objects.create(
+                nom=nom, epaisseur=epaisseur, client=client
+            )
 
             # Planche associée
             planche_nom = data.get("planche_nom") or f"Planche de {nom}"
@@ -861,17 +996,28 @@ def ajouter_article(request):
                         encadrement_bas=encadrement_bas,
                     )
 
-            if 'dernier_client_id' in request.session:
-                del request.session['dernier_client_id']
+            if "dernier_client_id" in request.session:
+                del request.session["dernier_client_id"]
 
-            return JsonResponse({"success": True, "message": "Article ajouté avec succès", "article_id": article.id})
+            return JsonResponse(
+                {
+                    "success": True,
+                    "message": "Article ajouté avec succès",
+                    "article_id": article.id,
+                }
+            )
 
         except Client.DoesNotExist:
-            return JsonResponse({"success": False, "message": "Client introuvable."}, status=404)
+            return JsonResponse(
+                {"success": False, "message": "Client introuvable."}, status=404
+            )
         except Exception as e:
             return JsonResponse({"success": False, "message": str(e)}, status=400)
 
-    return JsonResponse({"success": False, "message": "Méthode non autorisée"}, status=405)
+    return JsonResponse(
+        {"success": False, "message": "Méthode non autorisée"}, status=405
+    )
+
 
 @csrf_exempt
 def modifier_article(request, article_id):
@@ -913,12 +1059,17 @@ def modifier_article(request, article_id):
                         largeur_initiale_mm=int(float(largeur_cm) * 10),
                     )
 
-            return JsonResponse({"success": True, "message": "Article modifié avec succès."})
+            return JsonResponse(
+                {"success": True, "message": "Article modifié avec succès."}
+            )
 
         except Exception as e:
             return JsonResponse({"success": False, "message": str(e)}, status=500)
 
-    return JsonResponse({"success": False, "message": "Méthode non autorisée."}, status=405)
+    return JsonResponse(
+        {"success": False, "message": "Méthode non autorisée."}, status=405
+    )
+
 
 @csrf_exempt
 def supprimer_article(request, article_id):
@@ -926,9 +1077,15 @@ def supprimer_article(request, article_id):
 
     if request.method == "DELETE":
         article.delete()
-        return JsonResponse({"success": True, "message": "Article supprimé avec succès."}, status=200)
+        return JsonResponse(
+            {"success": True, "message": "Article supprimé avec succès."}, status=200
+        )
 
-    return JsonResponse({"success": False, "message": "Méthode non autorisée. Utilisez DELETE."}, status=405)
+    return JsonResponse(
+        {"success": False, "message": "Méthode non autorisée. Utilisez DELETE."},
+        status=405,
+    )
+
 
 @csrf_exempt
 def modifier_mesure(request, mesure_id):
@@ -950,12 +1107,19 @@ def modifier_mesure(request, mesure_id):
         if session_key in request.session:
             del request.session[session_key]
 
-        return JsonResponse({
-            "success": True,
-            "message": "Mesure modifiée avec succès. Le prix_payer total a été recalculé."
-        }, status=200)
+        return JsonResponse(
+            {
+                "success": True,
+                "message": "Mesure modifiée avec succès. Le prix_payer total a été recalculé.",
+            },
+            status=200,
+        )
 
-    return JsonResponse({"success": False, "message": "Méthode non autorisée. Utilisez POST."}, status=405)
+    return JsonResponse(
+        {"success": False, "message": "Méthode non autorisée. Utilisez POST."},
+        status=405,
+    )
+
 
 @csrf_exempt
 def liste_mesures_article(request, article_id):
@@ -965,10 +1129,17 @@ def liste_mesures_article(request, article_id):
         raise Http404("Article non trouvé")
 
     mesures = article.mesures.all().values(
-        "id", "longueur", "largeur", "nombre_de_fois",
-        "encadrement_droite", "encadrement_gauche", "encadrement_haut", "encadrement_bas"
+        "id",
+        "longueur",
+        "largeur",
+        "nombre_de_fois",
+        "encadrement_droite",
+        "encadrement_gauche",
+        "encadrement_haut",
+        "encadrement_bas",
     )
     return JsonResponse(list(mesures), safe=False)
+
 
 @csrf_exempt
 def supprimer_mesure(request, mesure_id):
@@ -989,30 +1160,41 @@ def supprimer_mesure(request, mesure_id):
                 largeur = Decimal(mesure.largeur or 0)
                 nb_fois = Decimal(mesure.nombre_de_fois or 0)
                 prix_payer_mesure = longueur * largeur * nb_fois * Decimal("0.5")
-                article.prix_payer_total = Decimal(getattr(article, "prix_payer_total", 0) or 0) - prix_payer_mesure
+                article.prix_payer_total = (
+                    Decimal(getattr(article, "prix_payer_total", 0) or 0)
+                    - prix_payer_mesure
+                )
                 if article.prix_payer_total < 0:
                     article.prix_payer_total = Decimal("0.0")
                 article.save()
             except Exception:
                 pass
 
-        return JsonResponse({
-            "success": True,
-            "message": "Mesure supprimée avec succès.",
-            "mesure_id_supprimee": mesure_id
-        }, status=200)
+        return JsonResponse(
+            {
+                "success": True,
+                "message": "Mesure supprimée avec succès.",
+                "mesure_id_supprimee": mesure_id,
+            },
+            status=200,
+        )
 
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
+
 
 # 🔹 Export CSV
 def exporter_articles_csv(request, article_id):
     if request.method == "GET":
         if article_id:
-            articles = [get_object_or_404(Article.objects.prefetch_related('mesures'), id=article_id)]
+            articles = [
+                get_object_or_404(
+                    Article.objects.prefetch_related("mesures"), id=article_id
+                )
+            ]
             filename = f"article_{article_id}.csv"
         else:
-            articles = Article.objects.all().prefetch_related('mesures')
+            articles = Article.objects.all().prefetch_related("mesures")
             filename = "articles.csv"
 
         response = HttpResponse(content_type="text/plain; charset=utf-8")
@@ -1026,22 +1208,17 @@ def exporter_articles_csv(request, article_id):
             total = Decimal("0.0")
 
             # Header de l'article
-            header1 = (
-                "Article | Épaisseur (cm) | Longueur planche (cm) | Largeur planche (cm) | Mesures :"
-            )
+            header1 = "Article | Épaisseur (cm) | Longueur planche (cm) | Largeur planche (cm) | Mesures :"
             lignes.append(header1)
-            
+
             lignes.append(
-                f"{getattr(art, 'type', '')} | "
-                f"{getattr(art, 'epaisseur', '')}"
+                f"{getattr(art, 'type', '')} | " f"{getattr(art, 'epaisseur', '')}"
             )
             if art.planches.exists():
                 for planche in art.planches.all():
                     longueur_cm = planche.longueur_initiale_mm / 10
                     largeur_cm = planche.largeur_initiale_mm / 10
-                    lignes.append(
-                        f"Planche: {longueur_cm} × {largeur_cm} cm"
-                    )
+                    lignes.append(f"Planche: {longueur_cm} × {largeur_cm} cm")
             else:
                 lignes.append("Planche: N/A")
 
@@ -1057,10 +1234,10 @@ def exporter_articles_csv(request, article_id):
             if mesures.exists():
                 for mesure in mesures:
                     prix_payer = (
-                        Decimal(str(mesure.longueur or 0)) *
-                        Decimal(str(mesure.largeur or 0)) *
-                        Decimal(str(mesure.nombre_de_fois or 0)) *
-                        Decimal("1.5")
+                        Decimal(str(mesure.longueur or 0))
+                        * Decimal(str(mesure.largeur or 0))
+                        * Decimal(str(mesure.nombre_de_fois or 0))
+                        * Decimal("1.5")
                     )
                     total += prix_payer
                     ligne = (
@@ -1089,14 +1266,19 @@ def exporter_articles_csv(request, article_id):
 
     return JsonResponse({"error": "Méthode non autorisée"}, status=405)
 
+
 # 🔹 Export TXT
 def exporter_articles_text(request, article_id=None):
     if request.method == "GET":
         if article_id:
-            articles = [get_object_or_404(Article.objects.prefetch_related('mesures'), pk=article_id)]
+            articles = [
+                get_object_or_404(
+                    Article.objects.prefetch_related("mesures"), pk=article_id
+                )
+            ]
             filename = f"article_{article_id}.txt"
         else:
-            articles = Article.objects.all().prefetch_related('mesures')
+            articles = Article.objects.all().prefetch_related("mesures")
             filename = "articles.txt"
 
         response = HttpResponse(content_type="text/plain; charset=utf-8")
@@ -1110,21 +1292,16 @@ def exporter_articles_text(request, article_id=None):
             total = Decimal("0.0")
 
             # Header de l'article
-            header1 = (
-                "Article | Épaisseur (cm) | Longueur planche (cm) | Largeur planche (cm) | Mesures :"
-            )
+            header1 = "Article | Épaisseur (cm) | Longueur planche (cm) | Largeur planche (cm) | Mesures :"
             lignes.append(header1)
             lignes.append(
-                f"{getattr(art, 'type', '')} | "
-                f"{getattr(art, 'epaisseur', '')}"
+                f"{getattr(art, 'type', '')} | " f"{getattr(art, 'epaisseur', '')}"
             )
             if art.planches.exists():
                 for planche in art.planches.all():
                     longueur_cm = planche.longueur_initiale_mm / 10
                     largeur_cm = planche.largeur_initiale_mm / 10
-                    lignes.append(
-                        f"Planche: {longueur_cm} × {largeur_cm} cm"
-                    )
+                    lignes.append(f"Planche: {longueur_cm} × {largeur_cm} cm")
             else:
                 lignes.append("Planche: N/A")
 
@@ -1140,10 +1317,10 @@ def exporter_articles_text(request, article_id=None):
             if mesures.exists():
                 for mesure in mesures:
                     prix_payer = (
-                        Decimal(str(mesure.longueur or 0)) *
-                        Decimal(str(mesure.largeur or 0)) *
-                        Decimal(str(mesure.nombre_de_fois or 0)) *
-                        Decimal("1.5")
+                        Decimal(str(mesure.longueur or 0))
+                        * Decimal(str(mesure.largeur or 0))
+                        * Decimal(str(mesure.nombre_de_fois or 0))
+                        * Decimal("1.5")
                     )
                     total += prix_payer
                     ligne = (
@@ -1172,84 +1349,6 @@ def exporter_articles_text(request, article_id=None):
 
     return JsonResponse({"error": "Méthode non autorisée"}, status=405)
 
-@csrf_exempt
-def prix_planche(request, article_id):
-    article = get_object_or_404(Article, id=article_id)
-    
-    # 🔹 Calcul du nouveau prix total depuis les planches
-    total = Decimal("0.0")
-    for planche in article.planches.all():
-        longueur = Decimal(planche.longueur_initiale_mm or 0) / Decimal("10")  # Convertir mm en cm
-        largeur = Decimal(planche.largeur_initiale_mm or 0) / Decimal("10")
-        total += longueur * largeur * Decimal("0.25")  # Coefficient de prix par cm²
-
-    # 🔹 Calcul propre du prix restant
-    ancien_total = article.prix_total or Decimal("0.0")
-    ancien_restant = article.prix_restant or Decimal("0.0")
-
-    article.prix_total = total
-
-    # ✅ Si aucun paiement n'a été enregistré, le restant = total
-    if ancien_total == 0 or ancien_restant == ancien_total:
-        article.prix_restant = total
-    else:
-        # ✅ Si une partie a été payée, on conserve la même somme déjà payée
-        montant_paye = ancien_total - ancien_restant
-        nouveau_restant = total - montant_paye
-        article.prix_restant = max(Decimal("0.0"), nouveau_restant)
-
-    article.save()
-
-    return JsonResponse({
-        "article": {
-            "id": article.id,
-            "nom": article.nom,
-            "type": article.type,
-            "epaisseur": str(article.epaisseur),
-            "prix_total": str(round(article.prix_total, 2)),
-            "prix_restant": str(round(article.prix_restant, 2)),
-            "prix_planche": str(round(total, 2))
-        }
-    }, status=200)
-
-@csrf_exempt
-def prix_total_detail(request, article_id):
-    article = get_object_or_404(Article, id=article_id)
-    # 🔹 Calcul du nouveau prix total
-    total = Decimal("0.0")
-    for mesure in article.mesures.all():
-        longueur = Decimal(mesure.longueur or 0)
-        largeur = Decimal(mesure.largeur or 0)
-        nombre = Decimal(mesure.nombre_de_fois or 0)
-        total += longueur * largeur * nombre * Decimal("0.15")
-
-    # 🔹 Calcul propre du prix restant
-    ancien_total = article.prix_total or Decimal("0.0")
-    ancien_restant = article.prix_restant or Decimal("0.0")
-
-    article.prix_total = total
-
-    # ✅ Si aucun paiement n’a été enregistré, le restant = total
-    if ancien_total == 0 or ancien_restant == ancien_total:
-        article.prix_restant = total
-    else:
-        # ✅ Si une partie a été payée, on conserve la même somme déjà payée
-        montant_paye = ancien_total - ancien_restant
-        nouveau_restant = total - montant_paye
-        article.prix_restant = max(Decimal("0.0"), nouveau_restant)
-
-    article.save()
-
-    return JsonResponse({
-        "article": {
-            "id": article.id,
-            "nom": article.nom,
-            "type": article.type,
-            "epaisseur": str(article.epaisseur),
-            "prix_total": float(article.prix_total),
-            "prix_restant": float(article.prix_restant),
-        }
-    })
 
 @csrf_exempt
 def paiement(request, article_id):
@@ -1273,9 +1372,17 @@ def paiement(request, article_id):
 
     # ✅ Calculs avec Decimal (précision maximale)
     ancien_restant = article.prix_restant  # Déjà un Decimal
-    nouveau_restant = max(Decimal('0.00'), ancien_restant - montant_paye)
-    a_rendre = montant_paye - ancien_restant if montant_paye > ancien_restant else Decimal('0.00')
-    manquant = ancien_restant - montant_paye if montant_paye < ancien_restant else Decimal('0.00')
+    nouveau_restant = max(Decimal("0.00"), ancien_restant - montant_paye)
+    a_rendre = (
+        montant_paye - ancien_restant
+        if montant_paye > ancien_restant
+        else Decimal("0.00")
+    )
+    manquant = (
+        ancien_restant - montant_paye
+        if montant_paye < ancien_restant
+        else Decimal("0.00")
+    )
 
     # ✅ Mise à jour du prix restant
     article.prix_restant = nouveau_restant
@@ -1287,7 +1394,9 @@ def paiement(request, article_id):
 
     # ✅ Message personnalisé
     if nouveau_restant == 0:
-        message = f"✅ Article payé en totalité. À rendre : {to_float_or_none(a_rendre)} MAD."
+        message = (
+            f"✅ Article payé en totalité. À rendre : {to_float_or_none(a_rendre)} MAD."
+        )
         article.prix_restant = -1
         article.save(update_fields=["prix_restant"])
     else:
@@ -1295,41 +1404,177 @@ def paiement(request, article_id):
         article.prix_restant = nouveau_restant
         article.save(update_fields=["prix_restant"])
 
-    return JsonResponse({
-        "message": message,
-        "article": {
-            "id": article.id,
-            "nom": article.nom,
-            "type": article.type,
-            "epaisseur": to_float_or_none(article.epaisseur),
-            "prix_total": to_float_or_none(article.prix_total),
-            "prix_restant": to_float_or_none(article.prix_restant),
+    return JsonResponse(
+        {
+            "message": message,
+            "article": {
+                "id": article.id,
+                "nom": article.nom,
+                "type": article.type,
+                "epaisseur": to_float_or_none(article.epaisseur),
+                "prix_total": to_float_or_none(article.prix_total),
+                "prix_restant": to_float_or_none(article.prix_restant),
+            },
+            "a_rendre": to_float_or_none(a_rendre),
+            "manquant": to_float_or_none(manquant),
         },
-        "a_rendre": to_float_or_none(a_rendre),
-        "manquant": to_float_or_none(manquant),
-    }, status=200)
+        status=200,
+    )
 
-def changer_prix_article(request, article_id):
+
+PRIX_BOIS = {
+    "Chêne": Decimal("250"),
+    "Sapin": Decimal("120"),
+    "Iroko": Decimal("400"),
+    "Érable": Decimal("280"),
+    "Acajou": Decimal("350"),
+    "Hêtre": Decimal("220"),
+    "Bouleau": Decimal("200"),
+    "Meranti": Decimal("300"),
+    "Teck": Decimal("500"),
+    "Pin": Decimal("150"),
+}
+
+
+@csrf_exempt
+def prix_planche(request, article_id):
     article = get_object_or_404(Article, id=article_id)
+
+    # Récupérer le type de bois depuis l'article
+    type_bois = (getattr(article, "type", None) or "").strip()
+    types_disponibles = list(PRIX_BOIS.keys())
+
+    # Comparer avec la liste des types de bois connue
+    if not type_bois or type_bois not in PRIX_BOIS:
+        return JsonResponse(
+            {
+                "error": "Type de bois inconnu ou non renseigné.",
+                "type_demande": type_bois,
+                "types_acceptes": types_disponibles,
+            },
+            status=400,
+        )
+
+    prix_m2 = PRIX_BOIS[type_bois]
+
+    # Calcul du prix total des planches (surface en m² * prix_m2)
+    total = Decimal("0.0")
+    # Utiliser la relation correcte .planches.all()
+    for planche in article.planches.all():
+        # planche.longueur_initiale_mm et largeur_initiale_mm sont en mm → convertir en m
+        longueur_m = (
+            Decimal(getattr(planche, "longueur_initiale_mm", 0)) or Decimal(0)
+        ) / Decimal("1000")
+        largeur_m = (
+            Decimal(getattr(planche, "largeur_initiale_mm", 0)) or Decimal(0)
+        ) / Decimal("1000")
+        surface_m2 = longueur_m * largeur_m
+        prix_planche = (surface_m2 * prix_m2).quantize(Decimal("0.01"))
+        total += prix_planche
+
+    # Sauvegarder/préserver les anciens montants pour calcul du restant
+    ancien_total = article.prix_total or Decimal("0.0")
+    ancien_restant = article.prix_restant or Decimal("0.0")
+
+    article.prix_total = total
+
+    # Si aucun paiement enregistré ou ancien_restant == ancien_total → nouveau restant = total
+    if ancien_total == Decimal("0.0") or ancien_restant == ancien_total:
+        article.prix_restant = total
+    else:
+        montant_paye = ancien_total - ancien_restant
+        nouveau_restant = total - montant_paye
+        article.prix_restant = max(Decimal("0.0"), nouveau_restant)
+
+    article.save(update_fields=["prix_total", "prix_restant"])
+
+    return JsonResponse(
+        {
+            "article": {
+                "id": article.id,
+                "nom": getattr(article, "nom", ""),
+                "type": type_bois,
+                "epaisseur": str(getattr(article, "epaisseur", "")),
+                "prix_m2": str(prix_m2),
+                "prix_total": str(article.prix_total),
+                "prix_restant": str(article.prix_restant),
+            },
+            "types_acceptes": types_disponibles,
+        },
+        status=200,
+    )
+
+
+@csrf_exempt
+def prix_total_detail(request, article_id):
+    article = get_object_or_404(Article, id=article_id)
+
+    # 🔹 Calcul du nouveau prix total
+    total = Decimal("0.0")
+    for mesure in article.mesures.all():
+        longueur = Decimal(mesure.longueur or 0)
+        largeur = Decimal(mesure.largeur or 0)
+        nombre = Decimal(mesure.nombre_de_fois or 0)
+        total += longueur * largeur * nombre * Decimal("1.5")
+
+    # 🔹 Calcul propre du prix restant
+    ancien_total = article.prix_total or Decimal("0.0")
+    ancien_restant = article.prix_restant or Decimal("0.0")
+
+    article.prix_total = total
+
+    # ✅ Si aucun paiement n’a été enregistré, le restant = total
+    if ancien_total == 0 or ancien_restant == ancien_total:
+        article.prix_restant = total
+    else:
+        # ✅ Si une partie a été payée, on conserve la même somme déjà payée
+        montant_paye = ancien_total - ancien_restant
+        nouveau_restant = total - montant_paye
+        article.prix_restant = max(Decimal("0.0"), nouveau_restant)
+
+    article.save()
+
+    return JsonResponse(
+        {
+            "article": {
+                "id": article.id,
+                "nom": article.nom,
+                "type": article.type,
+                "epaisseur": str(article.epaisseur),
+                "prix_total": float(article.prix_total),
+                "prix_restant": float(article.prix_restant),
+            }
+        }
+    )
+
+
+def changer_prix_article(request, atelier_id):
+    article = get_object_or_404(Article, id=atelier_id)
     if request.method == "POST":
         # Ici tu pourrais traiter la modification du prix_payer si besoin
-        return JsonResponse({
-            "message": "prix_payer d'atelier modifié avec succès.",
+        return JsonResponse(
+            {
+                "message": "prix_payer d'atelier modifié avec succès.",
+                "atelier": {
+                    "id": article.id,
+                    "nom": article.type,
+                    "epaisseur": article.epaisseur,
+                },
+            }
+        )
+    return JsonResponse(
+        {
             "atelier": {
                 "id": article.id,
                 "nom": article.type,
-                "epaisseur": article.epaisseur
-            }
-        })
-    return JsonResponse({
-        "article": {
-            "id": article.id,
-            "nom": article.type,
-            "epaisseur": article.epaisseur
-        },
-        "message": "GET request - données de l'article"
-    })
+                "epaisseur": article.epaisseur,
+            },
+            "message": "GET request - données de l'atelier",
+        }
+    )
 
+
+@csrf_exempt
 def valider_mesure(request, article_id):
     article = get_object_or_404(Article, id=article_id)
     if request.method == "POST":
@@ -1342,40 +1587,49 @@ def valider_mesure(request, article_id):
                 longueur=longueur,
                 largeur=largeur,
                 nombre_de_fois=nombre_de_fois,
-                encadrement_droite = request.POST.get("encadrement_droite") == "on",
-                encadrement_gauche = request.POST.get("encadrement_gauche") == "on",
-                encadrement_haut = request.POST.get("encadrement_haut") == "on",
-                encadrement_bas = request.POST.get("encadrement_bas") == "on"
+                encadrement_droite=request.POST.get("encadrement_droite") == "on",
+                encadrement_gauche=request.POST.get("encadrement_gauche") == "on",
+                encadrement_haut=request.POST.get("encadrement_haut") == "on",
+                encadrement_bas=request.POST.get("encadrement_bas") == "on",
             )
             computed_total = sum(
-                (float(m.longueur) if m.longueur else 0) *
-                (float(m.largeur) if m.largeur else 0) *
-                (float(m.nombre_de_fois) if m.nombre_de_fois else 0) * 0.5
+                (float(m.longueur) if m.longueur else 0)
+                * (float(m.largeur) if m.largeur else 0)
+                * (float(m.nombre_de_fois) if m.nombre_de_fois else 0)
+                * 0.5
                 for m in article.mesures.all()
             )
             session_key = f"prix_payer_restant_{atelier_id}"
             request.session[session_key] = computed_total
-            return JsonResponse({
-                "message": f"Mesure ajoutée et liée à l'atelier. prix_payer total mis à jour: {computed_total:.2f} DH.",
-                "atelier": {
-                    "id": article.id,
-                    "nom": article.type,
-                    "epaisseur": article.epaisseur,
-                    "prix_payer_total": round(computed_total, 2)
+            return JsonResponse(
+                {
+                    "message": f"Mesure ajoutée et liée à l'atelier. prix_payer total mis à jour: {computed_total:.2f} DH.",
+                    "atelier": {
+                        "id": article.id,
+                        "nom": article.type,
+                        "epaisseur": article.epaisseur,
+                        "prix_payer_total": round(computed_total, 2),
+                    },
                 }
-            })
+            )
         else:
-            return JsonResponse({
-                "error": "Champs longueur, largeur et nombre_de_fois sont obligatoires."
-            }, status=400)
-    return JsonResponse({
-        "atelier": {
-            "id": article.id,
-            "nom": article.type,
-            "epaisseur": article.epaisseur
-        },
-        "message": "GET request - données de l'atelier"
-    })
+            return JsonResponse(
+                {
+                    "error": "Champs longueur, largeur et nombre_de_fois sont obligatoires."
+                },
+                status=400,
+            )
+    return JsonResponse(
+        {
+            "atelier": {
+                "id": article.id,
+                "nom": article.type,
+                "epaisseur": article.epaisseur,
+            },
+            "message": "GET request - données de l'atelier",
+        }
+    )
+
 
 @csrf_exempt
 def ajouter_mesure(request, article_id):
@@ -1388,7 +1642,9 @@ def ajouter_mesure(request, article_id):
         return JsonResponse({"error": "JSON invalide."}, status=400)
 
     # Récupérer l'ID de l'article depuis le payload ou l'URL
-    article_id_from_payload = data.get("article") or data.get("article_id") or article_id
+    article_id_from_payload = (
+        data.get("article") or data.get("article_id") or article_id
+    )
     if not article_id_from_payload:
         return JsonResponse({"error": "Aucun article spécifié."}, status=400)
 
@@ -1416,34 +1672,38 @@ def ajouter_mesure(request, article_id):
         encadrement_droite=encadrement_droite,
         encadrement_gauche=encadrement_gauche,
         encadrement_haut=encadrement_haut,
-        encadrement_bas=encadrement_bas
+        encadrement_bas=encadrement_bas,
     )
 
     # Calculer le prix_payer total
     computed_total = sum(
-        (float(m.longueur or 0)) *
-        (float(m.largeur or 0)) *
-        (float(m.nombre_de_fois or 0)) * 0.5
+        (float(m.longueur or 0))
+        * (float(m.largeur or 0))
+        * (float(m.nombre_de_fois or 0))
+        * 0.5
         for m in article.mesures.all()
     )
 
     request.session[f"prix_payer_restant_{article.id}"] = computed_total
 
-    return JsonResponse({
-        "message": f"Mesure ajoutée avec succès. prix_payer total mis à jour: {computed_total:.2f} DH.",
-        "mesure": {
-            "id": mesure.id,
-            "longueur": mesure.longueur,
-            "largeur": mesure.largeur,
-            "nombre_de_fois": mesure.nombre_de_fois,
-            "encadrements": {
-                "droite": encadrement_droite,
-                "gauche": encadrement_gauche,
-                "haut": encadrement_haut,
-                "bas": encadrement_bas
-            }
+    return JsonResponse(
+        {
+            "message": f"Mesure ajoutée avec succès. prix_payer total mis à jour: {computed_total:.2f} DH.",
+            "mesure": {
+                "id": mesure.id,
+                "longueur": mesure.longueur,
+                "largeur": mesure.largeur,
+                "nombre_de_fois": mesure.nombre_de_fois,
+                "encadrements": {
+                    "droite": encadrement_droite,
+                    "gauche": encadrement_gauche,
+                    "haut": encadrement_haut,
+                    "bas": encadrement_bas,
+                },
+            },
         }
-    })
+    )
+
 
 def optimisation_decoupage(request, article_id):
     article_id = request.POST.get("article_id") or request.GET.get("article_id")
@@ -1465,9 +1725,9 @@ def optimisation_decoupage(request, article_id):
 
         mesures = article.mesures.all()
         total_area = sum(
-            (float(m.longueur) if m.longueur else 0) *
-            (float(m.largeur) if m.largeur else 0) *
-            (float(m.nombre_de_fois) if m.nombre_de_fois else 0)
+            (float(m.longueur) if m.longueur else 0)
+            * (float(m.largeur) if m.largeur else 0)
+            * (float(m.nombre_de_fois) if m.nombre_de_fois else 0)
             for m in mesures
         )
 
@@ -1481,39 +1741,44 @@ def optimisation_decoupage(request, article_id):
                 {
                     "board_number": i + 1,
                     "area_used": round(average_area_used, 2),
-                    "leftover": round(leftover_per_board, 2)
+                    "leftover": round(leftover_per_board, 2),
                 }
                 for i in range(num_boards)
             ]
         else:
             boards = []
 
-        return JsonResponse({
+        return JsonResponse(
+            {
+                "atelier": {
+                    "id": article.id,
+                    "nom": article.type,
+                    "epaisseur": article.epaisseur,
+                },
+                "board_length": planche_longueur,
+                "board_width": planche_largeur,
+                "board_area": round(board_area, 2),
+                "total_area": round(total_area, 2),
+                "num_boards": num_boards,
+                "boards": boards,
+                "schema": "Schéma d'agencement: [Disposition non implémentée]",
+            }
+        )
+
+    # Si GET : on retourne juste les infos de base
+    return JsonResponse(
+        {
             "atelier": {
                 "id": article.id,
                 "nom": article.type,
                 "epaisseur": article.epaisseur,
             },
-            "board_length": planche_longueur,
-            "board_width": planche_largeur,
-            "board_area": round(board_area, 2),
-            "total_area": round(total_area, 2),
-            "num_boards": num_boards,
-            "boards": boards,
-            "schema": "Schéma d'agencement: [Disposition non implémentée]"
-        })
+            "board_length": default_longueur,
+            "board_width": default_largeur,
+            "message": "GET request - valeurs par défaut envoyées",
+        }
+    )
 
-    # Si GET : on retourne juste les infos de base
-    return JsonResponse({
-        "atelier": {
-            "id": article.id,
-            "nom": article.type,
-            "epaisseur": article.epaisseur,
-        },
-        "board_length": default_longueur,
-        "board_width": default_largeur,
-        "message": "GET request - valeurs par défaut envoyées"
-    })
 
 @csrf_exempt
 def marquer_article_valide(request, article_id):
@@ -1524,15 +1789,19 @@ def marquer_article_valide(request, article_id):
     article.valide = True
     article.save()
 
-    return JsonResponse({
-        "message": "Article validé avec succès",
-        "article_id": article.id,
-        "valide": article.valide
-    })
+    return JsonResponse(
+        {
+            "message": "Article validé avec succès",
+            "article_id": article.id,
+            "valide": article.valide,
+        }
+    )
+
 
 import cairosvg, re, io
 from reportlab.lib.pagesizes import A4
 from PyPDF2 import PdfMerger
+
 
 @csrf_exempt
 def schema_pdf(request, article_id):
@@ -1570,14 +1839,19 @@ def schema_pdf(request, article_id):
         merger.write(output_buffer)
         merger.close()
 
-        response = HttpResponse(output_buffer.getvalue(), content_type="application/pdf")
-        response["Content-Disposition"] = f'attachment; filename="schema_{article_id}.pdf"'
+        response = HttpResponse(
+            output_buffer.getvalue(), content_type="application/pdf"
+        )
+        response["Content-Disposition"] = (
+            f'attachment; filename="schema_{article_id}.pdf"'
+        )
         return response
 
     except Article.DoesNotExist:
         return JsonResponse({"error": "Article introuvable"}, status=404)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
+
 
 @csrf_exempt
 def valider_decouppage_valideur(request, article_id):
@@ -1601,8 +1875,7 @@ def valider_decouppage_valideur(request, article_id):
     mesures = article.mesures.all()
 
     total_area = sum(
-        float(m.longueur) * float(m.largeur) * float(m.nombre_de_fois)
-        for m in mesures
+        float(m.longueur) * float(m.largeur) * float(m.nombre_de_fois) for m in mesures
     )
 
     # Construction des pièces
@@ -1610,15 +1883,20 @@ def valider_decouppage_valideur(request, article_id):
     for m in mesures:
         count = int(m.nombre_de_fois)
         for _ in range(count):
-            pieces.append({
-                'w': float(m.largeur),
-                'h': float(m.longueur),
-                'label': f"{m.longueur}x{m.largeur}",
-                'encadree': m.encadrement_droite or m.encadrement_gauche or m.encadrement_haut or m.encadrement_bas
-            })
+            pieces.append(
+                {
+                    "w": float(m.largeur),
+                    "h": float(m.longueur),
+                    "label": f"{m.longueur}x{m.largeur}",
+                    "encadree": m.encadrement_droite
+                    or m.encadrement_gauche
+                    or m.encadrement_haut
+                    or m.encadrement_bas,
+                }
+            )
 
     # Trier par aire décroissante
-    pieces.sort(key=lambda p: p['w'] * p['h'], reverse=True)
+    pieces.sort(key=lambda p: p["w"] * p["h"], reverse=True)
 
     boards_detail = []
     remaining_pieces = pieces[:]
@@ -1629,7 +1907,7 @@ def valider_decouppage_valideur(request, article_id):
         current_x = 0
 
         for piece in remaining_pieces[:]:
-            w, h = piece['w'], piece['h']
+            w, h = piece["w"], piece["h"]
             if current_x + w > board_width:
                 shelf_y += shelf_height
                 current_x = 0
@@ -1637,11 +1915,11 @@ def valider_decouppage_valideur(request, article_id):
             if shelf_y + h > board_length:
                 break
 
-            piece['x'] = current_x
-            piece['y'] = shelf_y
-            piece['w_eff'] = w
-            piece['h_eff'] = h
-            piece['rotated'] = False
+            piece["x"] = current_x
+            piece["y"] = shelf_y
+            piece["w_eff"] = w
+            piece["h_eff"] = h
+            piece["rotated"] = False
             board.append(piece)
             current_x += w
             shelf_height = max(shelf_height, h)
@@ -1654,14 +1932,16 @@ def valider_decouppage_valideur(request, article_id):
     # ✅ Calcul des détails par planche avec aire totale/utilisée/restante
     detail_par_planches = []
     for i, board in enumerate(boards_detail):
-        board_area_used = sum(piece['w_eff'] * piece['h_eff'] for piece in board)
-        detail_par_planches.append({
-            "board_number": i + 1,
-            "area_total": board_area,
-            "area_used": board_area_used,
-            "area_rest": max(board_area - board_area_used, 0),
-            "pieces": board,
-        })
+        board_area_used = sum(piece["w_eff"] * piece["h_eff"] for piece in board)
+        detail_par_planches.append(
+            {
+                "board_number": i + 1,
+                "area_total": board_area,
+                "area_used": board_area_used,
+                "area_rest": max(board_area - board_area_used, 0),
+                "pieces": board,
+            }
+        )
 
     # Génération du schéma SVG
     svgs = []
@@ -1670,40 +1950,45 @@ def valider_decouppage_valideur(request, article_id):
         for piece in b:
             svg += f'<rect x="{piece["x"]}" y="{piece["y"]}" width="{piece["w_eff"]}" height="{piece["h_eff"]}" fill="lightgreen" stroke="green" stroke-width="0.5"/>'
             svg += f'<text x="{piece["x"] + piece["w_eff"] / 2}" y="{piece["y"] + piece["h_eff"] / 2}" font-size="10" text-anchor="middle">{piece["label"]}</text>'
-        svg += '</svg>'
+        svg += "</svg>"
         svgs.append(svg)
 
     schema = "<br>".join(svgs)
     article.schema = schema
     article.save(update_fields=["schema"])
     # Réponse JSON enrichie
-    return JsonResponse({
-        "article": {
-            "id": article.id,
-            "nom": article.type,
-            "epaisseur": article.epaisseur,
-        },
-        "board_length": board_length,
-        "board_width": board_width,
-        "board_area": board_area,
-        "total_area": total_area,
-        "num_boards": num_boards,
-        "detail_par_planches": detail_par_planches,
-        "schema": article.schema,
-        "schema_message": f"{num_boards} planche(s) nécessaires. Répartition des pièces optimisée.",
-    })
+    return JsonResponse(
+        {
+            "article": {
+                "id": article.id,
+                "nom": article.type,
+                "epaisseur": article.epaisseur,
+            },
+            "board_length": board_length,
+            "board_width": board_width,
+            "board_area": board_area,
+            "total_area": total_area,
+            "num_boards": num_boards,
+            "detail_par_planches": detail_par_planches,
+            "schema": article.schema,
+            "schema_message": f"{num_boards} planche(s) nécessaires. Répartition des pièces optimisée.",
+        }
+    )
+
 
 def generate_schema(planche_longueur, planche_largeur, mesures):
     pieces = []
     for mesure in mesures:
         count = int(mesure.nombre_de_fois)
         for _ in range(count):
-            pieces.append({
-                'w': float(mesure.largeur),
-                'h': float(mesure.longueur),
-                'label': f"{mesure.longueur}x{mesure.largeur}"
-            })
-    pieces.sort(key=lambda p: p['w'] * p['h'], reverse=True)
+            pieces.append(
+                {
+                    "w": float(mesure.largeur),
+                    "h": float(mesure.longueur),
+                    "label": f"{mesure.longueur}x{mesure.largeur}",
+                }
+            )
+    pieces.sort(key=lambda p: p["w"] * p["h"], reverse=True)
 
     boards = []
     while pieces:
@@ -1719,23 +2004,26 @@ def generate_schema(planche_longueur, planche_largeur, mesures):
                 candidate_index = None
                 best_diff = None
                 for i, piece in enumerate(pieces):
-                    for orientation in [(piece['w'], piece['h'], False), (piece['h'], piece['w'], True)]:
+                    for orientation in [
+                        (piece["w"], piece["h"], False),
+                        (piece["h"], piece["w"], True),
+                    ]:
                         w_eff, h_eff, rotated = orientation
                         if w_eff <= gap and (shelf_y + h_eff <= planche_longueur):
                             diff = gap - w_eff
                             if best_diff is None or diff < best_diff:
                                 best_diff = diff
                                 candidate = piece.copy()
-                                candidate['w_eff'] = w_eff
-                                candidate['h_eff'] = h_eff
-                                candidate['rotated'] = rotated
+                                candidate["w_eff"] = w_eff
+                                candidate["h_eff"] = h_eff
+                                candidate["rotated"] = rotated
                                 candidate_index = i
                 if candidate is not None:
-                    candidate['x'] = current_x
-                    candidate['y'] = shelf_y
+                    candidate["x"] = current_x
+                    candidate["y"] = shelf_y
                     board.append(candidate)
-                    current_x += candidate['w_eff']
-                    row_height = max(row_height, candidate['h_eff'])
+                    current_x += candidate["w_eff"]
+                    row_height = max(row_height, candidate["h_eff"])
                     any_placed = True
                     del pieces[candidate_index]
                 else:
@@ -1762,11 +2050,12 @@ def generate_schema(planche_longueur, planche_largeur, mesures):
         for piece in b:
             svg += f'<rect x="{piece["x"]}" y="{piece["y"]}" width="{piece["w_eff"]}" height="{piece["h_eff"]}" fill="lightblue" stroke="blue" stroke-width="0.5"/>'
             svg += f'<text x="{piece["x"] + piece["w_eff"]/2}" y="{piece["y"] + piece["h_eff"]/2}" font-size="10" text-anchor="middle" fill="black">{piece["label"]}</text>'
-        svg += '</svg>'
+        svg += "</svg>"
         svgs.append(svg)
 
     # ✅ Retourne un dictionnaire simple, pas un JsonResponse
     return {"schema": svgs}
+
 
 def valider_decouppage(request, article_id):
     article = get_object_or_404(Article, id=article_id)
@@ -1785,23 +2074,28 @@ def valider_decouppage(request, article_id):
     mesures = article.mesures.all()
 
     total_area = sum(
-        (float(m.longueur) if m.longueur else 0) *
-        (float(m.largeur) if m.largeur else 0) *
-        (float(m.nombre_de_fois) if m.nombre_de_fois else 0)
+        (float(m.longueur) if m.longueur else 0)
+        * (float(m.largeur) if m.largeur else 0)
+        * (float(m.nombre_de_fois) if m.nombre_de_fois else 0)
         for m in mesures
     )
     pieces = []
     for m in mesures:
         count = int(m.nombre_de_fois)
         for _ in range(count):
-            pieces.append({
-                'w': float(m.largeur),
-                'h': float(m.longueur),
-                'label': f"{m.longueur}x{m.largeur}",
-                'encadree': m.encadrement_droite or m.encadrement_gauche or m.encadrement_haut or m.encadrement_bas
-            })
+            pieces.append(
+                {
+                    "w": float(m.largeur),
+                    "h": float(m.longueur),
+                    "label": f"{m.longueur}x{m.largeur}",
+                    "encadree": m.encadrement_droite
+                    or m.encadrement_gauche
+                    or m.encadrement_haut
+                    or m.encadrement_bas,
+                }
+            )
 
-    pieces.sort(key=lambda p: p['w'] * p['h'], reverse=True)
+    pieces.sort(key=lambda p: p["w"] * p["h"], reverse=True)
     boards_detail = []
     remaining_pieces = pieces[:]
 
@@ -1812,8 +2106,8 @@ def valider_decouppage(request, article_id):
         current_x = 0
 
         for piece in remaining_pieces[:]:
-            w = piece['w']
-            h = piece['h']
+            w = piece["w"]
+            h = piece["h"]
 
             if current_x + w > board_width:
                 shelf_y += shelf_height
@@ -1823,11 +2117,11 @@ def valider_decouppage(request, article_id):
             if shelf_y + h > board_length:
                 break
 
-            piece['x'] = current_x
-            piece['y'] = shelf_y
-            piece['w_eff'] = w
-            piece['h_eff'] = h
-            piece['rotated'] = False
+            piece["x"] = current_x
+            piece["y"] = shelf_y
+            piece["w_eff"] = w
+            piece["h_eff"] = h
+            piece["rotated"] = False
 
             board.append(piece)
             current_x += w
@@ -1839,25 +2133,29 @@ def valider_decouppage(request, article_id):
     num_boards = len(boards_detail)
     detail_par_planches = []
     for i, board in enumerate(boards_detail):
-        board_area_used = sum(piece['w_eff'] * piece['h_eff'] for piece in board)
-        detail_par_planches.append({
-            "board_number": i + 1,
-            "pieces": board,
-            "area_used": board_area_used,
-            "leftover": board_area - board_area_used,
-        })
+        board_area_used = sum(piece["w_eff"] * piece["h_eff"] for piece in board)
+        detail_par_planches.append(
+            {
+                "board_number": i + 1,
+                "pieces": board,
+                "area_used": board_area_used,
+                "leftover": board_area - board_area_used,
+            }
+        )
 
     schema = []
     for b in boards_detail:
         svg_elements = []
         for piece in b:
-            svg_elements.append({
-                "x": piece["x"],
-                "y": piece["y"],
-                "width": piece["w_eff"],
-                "height": piece["h_eff"],
-                "label": piece["label"]
-            })
+            svg_elements.append(
+                {
+                    "x": piece["x"],
+                    "y": piece["y"],
+                    "width": piece["w_eff"],
+                    "height": piece["h_eff"],
+                    "label": piece["label"],
+                }
+            )
         schema.append(svg_elements)
 
     response_data = {
@@ -1869,19 +2167,20 @@ def valider_decouppage(request, article_id):
         "nombre_planches": num_boards,
         "detail_par_planches": detail_par_planches,
         "schema": schema,
-        "message": f"{num_boards} planches nécessaires. Voici le détail de la répartition des mesures par planche."
+        "message": f"{num_boards} planches nécessaires. Voici le détail de la répartition des mesures par planche.",
     }
 
     return JsonResponse(response_data)
 
+
 def afficher_total_mesures(request):
-    ateliers = Article.objects.all().prefetch_related('mesures')
+    ateliers = Article.objects.all().prefetch_related("mesures")
     total_global = 0
     for article in ateliers:
         for mesure in article.mesures.all():
             total_global += (
-                float(mesure.longueur or 0) *
-                float(mesure.largeur or 0) *
-                float(mesure.nombre_de_fois or 0)
+                float(mesure.longueur or 0)
+                * float(mesure.largeur or 0)
+                * float(mesure.nombre_de_fois or 0)
             )
     return JsonResponse({"total_global": total_global})

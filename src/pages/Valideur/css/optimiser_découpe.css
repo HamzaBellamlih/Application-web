@@ -1,0 +1,142 @@
+.validation-article-container {
+  background: linear-gradient(145deg, #c78c3f, #cd9348);
+  color: #3e2723;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 6px 12px rgba(60, 40, 20, 0.3);
+  animation: fadeIn 0.8s ease-in-out;
+  font-family: "Poppins", sans-serif;
+  max-width: 900px;
+  margin: 40px auto;
+}
+
+.tous{
+    background: url("https://www.transparenttextures.com/patterns/wood-pattern.png"), #f8f3ee;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.titre {
+  text-align: center;
+  color: #4e342e;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+  animation: slideDown 1s ease;
+}
+
+.article-details p {
+  background: rgba(255, 255, 255, 0.3);
+  padding: 8px;
+  border-radius: 8px;
+  margin: 5px 0;
+  transition: background 0.3s ease;
+}
+.article-details p:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.liste-mesures li {
+  background: rgba(255, 255, 255, 0.4);
+  margin: 6px 0;
+  padding: 8px;
+  border-radius: 6px;
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+.liste-mesures li:hover {
+  transform: scale(1.03);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.table-planches {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  background: #fdf5e6;
+  box-shadow: 0 4px 8px rgba(50, 30, 10, 0.2);
+  animation: fadeIn 1s ease;
+}
+
+.table-planches th {
+  background: #a1887f;
+  color: white;
+  padding: 10px;
+  text-transform: uppercase;
+}
+
+.table-planches td {
+  text-align: center;
+  padding: 8px;
+  border-bottom: 1px solid #d7ccc8;
+}
+
+.schema-container {
+  border: 2px dashed #795548;
+  padding: 10px;
+  background: rgba(255, 248, 220, 0.7);
+  margin-top: 15px;
+  border-radius: 10px;
+  animation: zoomIn 1s ease;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 25px;
+}
+
+.controle_btns {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.btn {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.3s ease, background 0.4s ease;
+  font-weight: 600;
+  color: white;
+}
+
+.btn.valider { background: #6d4c41; }
+.btn.valider:hover { background: #8d6e63; transform: scale(1.05); }
+
+.btn.secondaire { background: #795548; }
+.btn.secondaire:hover { background: #a1887f; transform: scale(1.05); }
+
+.btn.export { background: #8d6e63; }
+.btn.export:hover { background: #bcaaa4; transform: scale(1.05); }
+
+.btn.retour { background: #3e2723; }
+.btn.retour:hover { background: #5d4037; transform: scale(1.05); }
+
+.message-success {
+  background: #c8e6c9;
+  color: #2e7d32;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 15px;
+  animation: fadeIn 1s ease;
+}
+
+/* 🌟 Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes zoomIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}

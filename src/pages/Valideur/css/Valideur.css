@@ -1,0 +1,188 @@
+/* === Thème Bois Raffiné Animé === */
+.page-valideur {
+  background: linear-gradient(135deg, #a47551, #d9b08c);
+  min-height: 100vh;
+  padding: 40px 30px;
+  font-family: "Poppins", sans-serif;
+  color: #3e2723;
+  animation: fadeIn 0.8s ease-in-out;
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.2);
+}
+
+/* === Titre === */
+.titre-valideur {
+  text-align: center;
+  font-size: 2.3rem;
+  color: #4b2e05;
+  text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.6);
+  margin-bottom: 30px;
+  border-bottom: 4px double #5d4037;
+  padding-bottom: 10px;
+  animation: slideDown 0.9s ease-out;
+}
+
+/* === Message d’erreur === */
+.erreur-message {
+  background-color: #ffebee;
+  color: #b71c1c;
+  border-left: 6px solid #e53935;
+  padding: 10px 14px;
+  border-radius: 8px;
+  width: fit-content;
+  margin: 10px auto;
+  font-weight: 500;
+  animation: shake 0.4s ease-in-out;
+}
+
+/* === Tableau === */
+.table-articles {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(255, 248, 240, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(62, 27, 4, 0.3);
+  overflow: hidden;
+  animation: fadeInUp 1s ease;
+}
+
+.table-articles th {
+  background: linear-gradient(90deg, #6b3e18, #8d6e63);
+  color: #fffdf6;
+  text-align: left;
+  padding: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+}
+
+.table-articles td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #d4b294;
+  font-size: 0.95rem;
+  color: #4e342e;
+  background-color: rgba(255, 255, 255, 0.8);
+  transition: background 0.4s ease, transform 0.2s ease;
+}
+
+.table-articles tr {
+  opacity: 0;
+  animation: rowAppear 0.8s ease forwards;
+}
+.table-articles tr:nth-child(n) {
+  animation-delay: calc(0.08s * var(--i));
+}
+
+.table-articles tr:hover {
+  background-color: #f9ede2;
+  transform: scale(1.01);
+}
+
+/* === Boutons d’action === */
+.actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.actions button {
+  border: none;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #fff;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Bouton Valider */
+.btn-valider {
+  background: linear-gradient(135deg, #5a3c1c, #8d6e63);
+}
+.btn-valider:hover {
+  background: linear-gradient(135deg, #4e342e, #a98274);
+  transform: scale(1.08);
+  box-shadow: 0 5px 12px rgba(62, 27, 4, 0.4);
+}
+
+/* Bouton CSV */
+.btn-export-csv {
+  background: linear-gradient(135deg, #b58948, #d7a86e);
+}
+.btn-export-csv:hover {
+  background: linear-gradient(135deg, #a67c32, #e0b97d);
+  transform: scale(1.08);
+  box-shadow: 0 5px 12px rgba(181, 137, 72, 0.4);
+}
+
+/* Bouton TXT */
+.btn-export-txt {
+  background: linear-gradient(135deg, #7a4a23, #b26a3a);
+}
+.btn-export-txt:hover {
+  background: linear-gradient(135deg, #5d3a20, #c27943);
+  transform: scale(1.08);
+  box-shadow: 0 5px 12px rgba(91, 46, 13, 0.4);
+}
+
+/* === Aucun article === */
+.aucun-article {
+  text-align: center;
+  padding: 20px;
+  font-style: italic;
+  color: #6d4c41;
+}
+
+/* === Bouton retour === */
+.bouton-retour {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.bouton-retour button {
+  background: linear-gradient(135deg, #3e1d04, #5a2e0a);
+  color: #fff;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(62, 27, 4, 0.3);
+}
+
+.bouton-retour button:hover {
+  background: linear-gradient(135deg, #5a2e0a, #7b3f11);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 6px 20px rgba(62, 27, 4, 0.4);
+}
+
+/* === Animations === */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-25px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes rowAppear {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}

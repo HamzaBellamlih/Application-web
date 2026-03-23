@@ -1,0 +1,122 @@
+.paiement-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(145deg, #b58b4e, #7a5a2f);
+  font-family: "Poppins", sans-serif;
+  animation: fadeIn 1.5s ease-in-out;
+}
+
+.paiement-card {
+  background: #f5f1e3;
+  color: #3a2e1f;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  width: 420px;
+  animation: float 3s ease-in-out infinite;
+}
+
+.titre {
+  text-align: center;
+  color: #4b2e05;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.info-client {
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.article-details {
+  background: #e9dec7;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.prix-section {
+  margin: 15px 0;
+  background: #fff2cc;
+  padding: 10px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.paiement-form {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.paiement-form input {
+  padding: 10px;
+  border: 2px solid #a77b41;
+  border-radius: 8px;
+  width: 60%;
+  transition: 0.3s;
+}
+
+.paiement-form input:focus {
+  border-color: #6a4500;
+  outline: none;
+  transform: scale(1.03);
+}
+
+.paiement-form button {
+  background: #8b5e34;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.paiement-form button:hover {
+  background: #b0793d;
+  transform: scale(1.05);
+}
+
+.message {
+  color: green;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.error, .alert {
+  color: red;
+  text-align: center;
+  margin-top: 5px;
+}
+
+.retour-btn {
+  display: block;
+  margin: 20px auto 0;
+  background: #4a2b0b;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.retour-btn:hover {
+  background: #7a4a1f;
+  transform: translateY(-2px);
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}

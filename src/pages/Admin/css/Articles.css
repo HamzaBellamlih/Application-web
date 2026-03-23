@@ -1,0 +1,85 @@
+/* Container principal */
+.liste-container {
+  padding: 30px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #F3E2D0; /* fond clair bois */
+  min-height: 100vh;
+  animation: fadeIn 0.8s ease;
+}
+
+/* Animation d'apparition */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Titre */
+.liste-title {
+  color: #5C3A21;
+  margin-bottom: 25px;
+  font-size: 1.8rem;
+  text-shadow: 1px 1px 2px #A16B44;
+}
+
+/* Messages d'erreur et absence de données */
+.error-message {
+  color: red;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.no-data {
+  font-style: italic;
+  color: #333;
+}
+
+/* Table */
+.liste-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  background-color: #FFF8DC;
+}
+
+.liste-table th,
+.liste-table td {
+  border: 1px solid #5C3A21;
+  padding: 10px;
+  text-align: left;
+}
+
+.liste-table th {
+  background-color: #8B5E3C;
+  color: #FFF8DC;
+}
+
+.articles-list {
+  list-style-type: disc;
+  padding-left: 20px;
+  margin: 5px 0;
+}
+
+/* Bouton retour */
+.back-button {
+  background-color: #8B5E3C;
+  color: #FFF8DC;
+  border: 2px solid #5C3A21;
+  padding: 12px 25px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px #5C3A21, 0 6px 10px rgba(0,0,0,0.2);
+}
+
+.back-button:hover {
+  transform: translateY(-3px) scale(1.05);
+  background-color: #A16B44;
+  box-shadow: 0 8px #5C3A21, 0 12px 15px rgba(0,0,0,0.3);
+}
+
+.back-button:active {
+  transform: translateY(2px);
+  box-shadow: 0 4px #5C3A21, 0 6px 10px rgba(0,0,0,0.2);
+}

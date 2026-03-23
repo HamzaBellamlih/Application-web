@@ -1,0 +1,118 @@
+/* Conteneur principal */
+.modifier-article-container {
+  background: linear-gradient(145deg, #ffc57d, #ffc57d);
+  border-radius: 20px;
+  padding: 35px;
+  width: 85%;
+  margin: 30px auto;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+  font-family: 'Poppins', sans-serif;
+  animation: containerPulse 5s ease-in-out infinite alternate;
+}
+
+/* Animation conteneur principal */
+@keyframes containerPulse {
+  0% { transform: translateY(0px) scale(1); box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
+  50% { transform: translateY(-6px) scale(1.01); box-shadow: 0 12px 30px rgba(0,0,0,0.25); }
+  100% { transform: translateY(0px) scale(1); box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
+}
+
+/* Titres */
+.modifier-title {
+  text-align: center;
+  color: #8b5e3c;
+  margin-bottom: 25px;
+  animation: fadeInDown 0.8s ease-out;
+}
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Infos client */
+.client-info {
+  text-align: center;
+  font-size: 3rem;
+  margin-bottom: 20px;
+  font-weight: 500;
+  color: #432e17;
+}
+
+/* Labels et champs */
+.form-label {
+  display: block;
+  margin-top: 12px;
+  font-weight: 600;
+  color: #6e4a2d;
+}
+
+.form-select,
+.form-input {
+  width: 98%;
+  padding: 8px;
+  margin: 5px 0 15px;
+  border-radius: 8px;
+  background-color: #a46c33;
+  font-size: 0.95rem;
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-select:focus,
+.form-input:focus {
+  border-color: #a16b45;
+  transform: scale(1.02);
+  box-shadow: 0 0 6px rgba(161,107,69,0.4);
+  outline: none;
+}
+
+/* Groupe de boutons */
+.button-group,
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+/* Boutons génériques */
+.btn {
+  padding: 8px 18px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  color: rgb(117, 74, 15);
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+  animation: buttonFloat 3s ease-in-out infinite alternate;
+}
+
+/* Animation flottante boutons */
+@keyframes buttonFloat {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+  100% { transform: translateY(0px); }
+}
+
+/* Boutons spécifiques */
+.btn-submit { background: linear-gradient(135deg, #a16b45, #7a4a29); }
+.btn-submit:hover { transform: scale(1.08) translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.25); }
+
+.btn-cancel { background: #6c757d; }
+.btn-cancel:hover { transform: scale(1.05) translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+
+/* Message d'erreur */
+.error-message {
+  color: #c0392b;
+  font-weight: 700;
+  text-align: center;
+  margin-top: 12px;
+  animation: shake 0.4s;
+}
+
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  50% { transform: translateX(6px); }
+  75% { transform: translateX(-6px); }
+}

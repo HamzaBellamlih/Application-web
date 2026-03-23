@@ -1,0 +1,172 @@
+/* === Thème bois raffiné === */
+.wood-container {
+  background: linear-gradient(135deg, #a47551, #d9b08c);
+  min-height: 100vh;
+  padding: 40px 20px;
+  color: #3e2723;
+  font-family: 'Poppins', sans-serif;
+  animation: fadeIn 1s ease-in-out;
+}
+
+/* === Titre principal === */
+.wood-title {
+  text-align: center;
+  font-size: 2.3rem;
+  margin-bottom: 25px;
+  color: #3e1d04;
+  text-shadow: 2px 2px 6px rgba(255, 255, 255, 0.5);
+  animation: slideDown 0.8s ease-out;
+}
+
+/* === Conteneur du tableau === */
+.table-container {
+  background-color: rgba(255, 248, 240, 0.95);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 6px 15px rgba(62, 27, 4, 0.3);
+  overflow-x: auto;
+
+  /* Animation va-et-vient */
+  animation: tableMove 4s ease-in-out infinite alternate;
+}
+
+/* === Animation de va-et-vient === */
+@keyframes tableMove {
+  0% {
+    transform: translateY(0px) scale(1);
+    box-shadow: 0 6px 15px rgba(62, 27, 4, 0.3);
+  }
+  50% {
+    transform: translateY(-8px) scale(1.01);
+    box-shadow: 0 10px 20px rgba(62, 27, 4, 0.45);
+  }
+  100% {
+    transform: translateY(0px) scale(1);
+    box-shadow: 0 6px 15px rgba(62, 27, 4, 0.3);
+  }
+}
+
+/* === Tableau === */
+.wood-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.wood-table th {
+  background-color: #6b3e18;
+  color: white;
+  padding: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.wood-table td {
+  border-bottom: 1px solid #d4b294;
+  padding: 10px;
+  vertical-align: top;
+}
+
+.wood-table tr:nth-child(even) {
+  background-color: #f9f1e7;
+}
+
+/* === Mesures === */
+.measure-item {
+  background-color: #f7e0c3;
+  border-radius: 5px;
+  padding: 5px 8px;
+  margin-bottom: 5px;
+  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.15);
+}
+
+.encadrement {
+  font-size: 0.85em;
+  color: #4e342e;
+}
+
+/* === Boutons d'action === */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+
+.action-buttons button {
+  background-color: #8d6e63;
+  color: white;
+  border: none;
+  margin-bottom: -30px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.9rem;
+  width: 140px;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 5px rgba(62, 27, 4, 0.2);
+}
+
+.action-buttons button:hover {
+  background-color: #5d4037;
+  transform: scale(1.07);
+  box-shadow: 0 4px 10px rgba(62, 27, 4, 0.4);
+}
+
+/* === Bouton retour === */
+.back-button {
+  display: block;
+  margin: 30px auto 0;
+  background-color: #3e1d04;
+  color: #fff;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.3s, transform 0.3s;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+.back-button:hover {
+  background-color: #5a2e0a;
+  transform: translateY(-2px);
+}
+
+/* === Messages d’erreur === */
+.error {
+  color: #c62828;
+  font-weight: bold;
+  background: #ffebee;
+  padding: 8px 12px;
+  border-left: 5px solid #b71c1c;
+  border-radius: 6px;
+  width: fit-content;
+  margin: 10px auto;
+  animation: shake 0.4s;
+}
+
+/* === Autres animations === */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+}

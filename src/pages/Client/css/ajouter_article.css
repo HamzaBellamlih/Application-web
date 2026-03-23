@@ -1,0 +1,135 @@
+/* Conteneur principal compact */
+.ajouter-article-container {
+  background: url("https://www.transparenttextures.com/patterns/wood-pattern.png"), #f8f3ee;
+  background-blend-mode: multiply;
+  color: #3b2b1b;
+  border-radius: 15px;
+  padding: 25px;
+  width: 80%;
+  margin: 20px auto;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Titres */
+h2, h3 {
+  text-align: center;
+  color: #5a3c1c;
+  margin: 10px 0;
+  font-weight: 600;
+}
+
+/* Labels et Inputs */
+label {
+  font-weight: 500;
+  margin-top: 5px;
+  display: block;
+}
+
+input, select {
+  width: 100%;
+  padding: 5px;
+  margin: 3px 0 10px;
+  border: 1.5px solid #c8a97e;
+  border-radius: 6px;
+  background-color: #fff8f1;
+  font-size: 0.9rem;
+}
+
+/* Grille pour planche et mesures */
+.form-grid {
+  display: flex;
+  gap: 10px;
+}
+
+/* Container mesures horizontal compact */
+.mesures-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-start;
+  margin-bottom: 15px;
+}
+
+/* Cartes mesures compact */
+.mesure-card {
+  background: linear-gradient(145deg, #ffd5a2, #ffdec1);
+  border-left: 4px solid #a16b45;
+  border-radius: 10px;
+  padding: 10px;
+  width: 160px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 0.85rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.mesure-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+}
+
+/* Titres cartes mesures */
+.mesure-card h4 {
+  margin: 0;
+  color: #8b5e3c;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+/* Inputs à l'intérieur des cartes */
+.mesure-card input {
+  padding: 4px;
+  border-radius: 5px;
+  border: 1px solid #794d00;
+  font-size: 0.85rem;
+}
+
+/* Checkboxes bords */
+.bords {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.bords label {
+  font-size: 0.75rem;
+  color: #6e4a2d;
+  margin-right: 5px;
+}
+
+/* Boutons compact */
+.btn-group {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.btn-wood, .btn-secondary {
+  padding: 6px 15px;
+  font-size: 0.85rem;
+  border-radius: 6px;
+}
+
+.btn-wood:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* Message d'erreur */
+.error {
+  color: red;
+  text-align: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+/* Infos client */
+.client-info {
+  text-align: center;
+  margin-bottom: 10px;
+  font-weight: 500;
+  font-size: 0.9rem;
+}

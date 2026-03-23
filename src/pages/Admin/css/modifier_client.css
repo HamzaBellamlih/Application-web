@@ -1,0 +1,104 @@
+/* Container */
+.form-container {
+  padding: 30px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #F3E2D0; /* bois clair */
+  min-height: 100vh;
+  animation: fadeIn 0.8s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Titre */
+.form-title {
+  color: #5C3A21;
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+  text-shadow: 1px 1px 2px #A16B44;
+}
+
+/* Message */
+.form-message {
+  color: green;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+/* Formulaire */
+.client-form {
+  display: flex;
+  flex-direction: column;
+  max-width: 500px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  margin-bottom: 5px;
+  color: #5C3A21;
+  font-weight: bold;
+}
+
+.form-group input {
+  padding: 10px;
+  border: 2px solid #8B5E3C;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  font-size: 16px;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #A16B44;
+  box-shadow: 0 0 5px #A16B44;
+}
+
+/* Boutons */
+.form-buttons {
+  display: flex;
+  margin-top: 10px;
+}
+
+.btn-save, .btn-back {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 16px;
+}
+
+.btn-save {
+  background-color: #8B5E3C;
+  color: #FFF8DC;
+  box-shadow: 0 4px #5C3A21, 0 6px 10px rgba(0,0,0,0.2);
+}
+
+.btn-save:hover {
+  transform: translateY(-3px) scale(1.05);
+  background-color: #A16B44;
+  box-shadow: 0 8px #5C3A21, 0 12px 15px rgba(0,0,0,0.3);
+}
+
+.btn-save:active {
+  transform: translateY(2px);
+  box-shadow: 0 4px #5C3A21, 0 6px 10px rgba(0,0,0,0.2);
+}
+
+.btn-back {
+  background-color: #c0392b;
+  color: white;
+  margin-left: 10px;
+}
+
+.btn-back:hover {
+  transform: scale(1.05);
+  background-color: #e74c3c;
+}
